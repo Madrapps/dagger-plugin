@@ -1,22 +1,31 @@
 <idea-plugin>
     <id>com.madrapps.dagger-plugin</id>
-    <name>Plugin display name here</name>
-    <vendor email="support@yourcompany.com" url="http://www.yourcompany.com">YourCompany</vendor>
+    <name>Dagger</name>
+    <vendor email="madrasappfactory@gmail.com" url="https://github.com/Madrapps">Madrapps</vendor>
 
     <description><![CDATA[
-    Enter short description for your plugin here.<br>
-    <em>most HTML tags may be used</em>
+    Plugin to support working with Dagger 2 library</br>
     ]]></description>
 
-    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
-         on how to target different products -->
     <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.lang</depends>
+    <depends>org.jetbrains.kotlin</depends>
+    <depends>com.intellij.modules.java</depends>
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
+        <compiler implementation="com.madrapps.dagger.MyCompiler" />
     </extensions>
 
+    <project-components>
+        <component>
+            <implementation-class>com.madrapps.dagger.MyComponent</implementation-class>
+        </component>
+    </project-components>
+
     <actions>
-        <!-- Add your actions here -->
+        <action id="com.madrapps.dagger.MyAction" class="com.madrapps.dagger.MyAction" text="MyAction">
+            <add-to-group group-id="BuildMenu" anchor="first"/>
+        </action>
     </actions>
 </idea-plugin>
