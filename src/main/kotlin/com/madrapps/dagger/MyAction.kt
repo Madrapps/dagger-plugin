@@ -33,7 +33,7 @@ class MyAction : AnAction() {
         val compiler = ToolProvider.getSystemJavaCompiler()
         val diagnostics = DiagnosticCollector<JavaFileObject>()
         val fileManager: StandardJavaFileManager = compiler.getStandardFileManager(diagnostics, null, null)
-        fileManager.setLocation(StandardLocation.CLASS_OUTPUT, listOf(File(project.basePath)))
+        fileManager.setLocation(StandardLocation.CLASS_OUTPUT, listOf(File(project.basePath, "build/dagger-plugin")))
         println("--- | " + fileManager.getLocation(StandardLocation.CLASS_OUTPUT).toList())
 
         val mutableListOf = mutableListOf<JavaFileObject>()
