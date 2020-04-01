@@ -9,7 +9,7 @@ import javax.annotation.processing.Filer
 import javax.lang.model.util.Elements
 import javax.lang.model.util.Types
 
-class SpewPlugin : BindingGraphPlugin {
+class SpiPlugin : BindingGraphPlugin {
 
     override fun visitGraph(
         bindingGraph: BindingGraph,

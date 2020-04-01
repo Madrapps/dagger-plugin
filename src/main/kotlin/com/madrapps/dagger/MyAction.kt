@@ -3,90 +3,100 @@ package com.madrapps.dagger
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.roots.OrderEnumerator
+import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.psi.PsiFile
+import com.intellij.psi.PsiManager
 import com.intellij.util.PathUtil
+import dagger.android.processor.AndroidProcessor
 import dagger.internal.DaggerCollections
 import dagger.internal.codegen.ComponentProcessor
+import org.jetbrains.kotlin.idea.configuration.externalProjectPath
 import org.jetbrains.kotlin.idea.util.projectStructure.allModules
 import org.jetbrains.kotlin.idea.util.sourceRoots
+import org.jetbrains.uast.UFile
+import org.jetbrains.uast.toUElement
 import java.io.File
 import javax.tools.*
-import javax.tools.JavaCompiler.CompilationTask
 import kotlin.system.measureTimeMillis
 
 
 class MyAction : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
+        println("TTRRTT, ActionPerformed")
         val lo = measureTimeMillis {
-            println("TTRRTT, ActionPerformed")
-
             val project = e.project ?: throw IllegalArgumentException()
-            val sourceFolder = project.allModules().flatMap { it.sourceRoots.toList() }
-                .filter {
-                    it.canonicalPath?.endsWith("src/main/java") == true
-                    // || it.canonicalPath?.endsWith("src/main/kotlin") == true
-                }
-            println(sourceFolder)
+
+            val validModules = project.allModules().filter { it.sourceRoots.isNotEmpty() }
+
+            validModules.forEach { module ->
+                println("Module - $module")
+                val sources1 = module.sourceRoots.filter { it.path.endsWith("main/java") || it.path.endsWith("main/kotlin") }
+                println("Sources - $sources1")
+                if (sources1.isNotEmpty()) {
+
+                    val compiler = ToolProvider.getSystemJavaCompiler()
+                    val diagnostics = DiagnosticCollector<JavaFileObject>()
+                    val fileManager: StandardJavaFileManager = compiler.getStandardFileManager(diagnostics, null, null)
+
+                    val outputDirectory = File(module.externalProjectPath, "build/dagger-plugin")
+                    outputDirectory.mkdirs()
+
+                    fileManager.setLocation(StandardLocation.CLASS_OUTPUT, listOf(outputDirectory))
 
 
-            val compiler = ToolProvider.getSystemJavaCompiler()
-            val diagnostics = DiagnosticCollector<JavaFileObject>()
-            val fileManager: StandardJavaFileManager = compiler.getStandardFileManager(diagnostics, null, null)
-            val outputDirectory = File(project.basePath, "build/dagger-plugin")
-            outputDirectory.mkdirs()
-
-            fileManager.setLocation(StandardLocation.CLASS_OUTPUT, listOf(outputDirectory))
-            println("--- | " + fileManager.getLocation(StandardLocation.CLASS_OUTPUT).toList())
-
-            val mutableListOf = mutableListOf<JavaFileObject>()
-            val javaObjects =
-                File(sourceFolder.first().canonicalPath).walkTopDown().filter { it.isFile && it.extension == "java" }
-                    .forEach {
-                        mutableListOf += fileManager.getJavaFileObjects(it)
+                    val files: MutableList<File> =
+                        OrderEnumerator.orderEntries(module).recursively().pathsList.virtualFiles
+                            .filterNot { it.path.contains("com.google.dagger") }
+                            .map { File(it.path) }.toMutableList()
+                    val jarPathForClass = PathUtil.getJarPathForClass(DaggerCollections::class.java)
+                    files.add(File(jarPathForClass))
+                    val kotlinClasses = File(module.externalProjectPath, "build/tmp/kotlin-classes/debug")
+                    if (kotlinClasses.exists()) {
+                        files.add(kotlinClasses)
+                    }
+                    files.toMutableList().forEach {
+                        val path = it.path
+                        if (path.endsWith("build/intermediates/javac/debug/classes")) {
+                            val newPath = path.replace(
+                                "build/intermediates/javac/debug/classes",
+                                "build/tmp/kotlin-classes/debug"
+                            )
+                            val cl = File(newPath)
+                            if (cl.exists()) {
+                                files.add(cl)
+                            }
+                        }
                     }
 
-            val modules = project.allModules().filter { it.sourceRoots.isNotEmpty() }
+                    fileManager.setLocation(StandardLocation.CLASS_PATH, files)
 
-            val module = project.allModules().get(1)
-            val files: MutableList<File> = OrderEnumerator.orderEntries(module).recursively().pathsList.virtualFiles
-                .filterNot { it.path.contains("com.google.dagger") }
-                .map { File(it.path) }.toMutableList()
+                    val psiFiles = mutableListOf<PsiFile>()
+                    sources1.forEach {
+                        File(it.path).walkTopDown()
+                            .filter { it.isFile && (it.extension == "java" || it.extension == "kt") }
+                            .forEach {
+                                val vf = LocalFileSystem.getInstance().findFileByIoFile(it)
+                                if (vf != null) {
+                                    PsiManager.getInstance(project).findFile(vf)?.let { psiFiles += it }
+                                }
+                            }
+                    }
 
-            val jarPathForClass = PathUtil.getJarPathForClass(DaggerCollections::class.java)
+                    val classes = psiFiles.map(PsiFile::toUElement).filterIsInstance<UFile>().flatMap(UFile::classes)
+                        .mapNotNull { it.qualifiedName }
 
-            files.add(File(jarPathForClass))
-            fileManager.setLocation(StandardLocation.CLASS_PATH, files)
-            val classRoots = OrderEnumerator.orderEntries(module).classesRoots.filter { it.path.endsWith("main") }
-                .map { File(it.path) }
-            val classes = mutableListOf<String>()
-            classRoots.forEach {
-                it.walkTopDown().forEach {
-                    classes += it.path
+                    if (classes.isNotEmpty()) {
+                        val task = compiler.getTask(null, fileManager, diagnostics, null, classes, null)
+                        task.setProcessors(listOf(ComponentProcessor.forTesting(SpiPlugin()), AndroidProcessor()))
+                        val success = task.call()
+
+                        for (diagnostic in diagnostics.diagnostics) {
+                            System.err.println(diagnostic)
+                        }
+                    }
                 }
             }
-
-            val map = mutableListOf.map {
-                it.name
-            }
-
-            val task: CompilationTask =
-                compiler.getTask(
-                    null,
-                    fileManager,
-                    diagnostics,
-                    null,
-                    null,
-                    mutableListOf
-                )
-            val specPlugin = SpewPlugin()
-            val forTesting = ComponentProcessor.forTesting(specPlugin)
-            task.setProcessors(
-                listOf(forTesting)
-            )
-            val success = task.call()
-            for (diagnostic in diagnostics.diagnostics) {
-                // System.err.println(diagnostic)
-            }
         }
-        println(" LO $lo")
+        println(" Time Taken - $lo")
     }
 }
