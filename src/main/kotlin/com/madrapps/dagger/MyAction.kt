@@ -19,7 +19,6 @@ import java.io.File
 import javax.tools.*
 import kotlin.system.measureTimeMillis
 
-
 class MyAction : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
         println("TTRRTT, ActionPerformed")
@@ -30,7 +29,8 @@ class MyAction : AnAction() {
 
             validModules.forEach { module ->
                 println("Module - $module")
-                val sources1 = module.sourceRoots.filter { it.path.endsWith("main/java") || it.path.endsWith("main/kotlin") }
+                val sources1 =
+                    module.sourceRoots.filter { it.path.endsWith("main/java") || it.path.endsWith("main/kotlin") }
                 println("Sources - $sources1")
                 if (sources1.isNotEmpty()) {
 

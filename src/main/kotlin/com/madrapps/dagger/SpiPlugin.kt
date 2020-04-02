@@ -28,5 +28,7 @@ class SpiPlugin : BindingGraphPlugin {
         for (node in bindingGraph.bindings().stream().distinct().collect(Collectors.toList())) {
             //println(" --- " + node.javaClass.simpleName)
         }
+
+        Presenter.updateView(bindingGraph.bindings().map { it.key().toString() })
     }
 }

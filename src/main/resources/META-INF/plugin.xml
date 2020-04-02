@@ -13,8 +13,9 @@
     <depends>com.intellij.modules.java</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <!-- Add your extensions here -->
-        <compiler implementation="com.madrapps.dagger.MyCompiler" />
+
+        <toolWindow anchor="right" factoryClass="com.madrapps.dagger.toolwindow.DaggerToolWindow"
+                    icon="/icons/greenrobot.png" id ="Dagger" />
     </extensions>
 
     <project-components>
