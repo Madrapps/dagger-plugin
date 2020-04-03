@@ -10,6 +10,7 @@ import com.intellij.uiDesigner.core.GridConstraints
 import com.intellij.uiDesigner.core.GridLayoutManager
 import com.madrapps.dagger.DaggerView
 import com.madrapps.dagger.Presenter
+import java.awt.BorderLayout
 import javax.swing.JPanel
 import javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED
 import javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED
@@ -28,7 +29,7 @@ class MyPanel(toolWindow: ToolWindow) : SimpleToolWindowPanel(true, true), Dagge
     }
 
     private fun getContentPanel(): JPanel {
-        val panel = JBPanel<SimpleToolWindowPanel>(GridLayoutManager(1, 1))
+        val panel = JBPanel<SimpleToolWindowPanel>(GridLayoutManager(2, 1))
 
         val rootNode = DefaultMutableTreeNode("Sample root node")
         for (i in 0..4) {
@@ -40,9 +41,20 @@ class MyPanel(toolWindow: ToolWindow) : SimpleToolWindowPanel(true, true), Dagge
         treeList.isRootVisible = false
 
         val jbScrollPane = JBScrollPane(treeList, VERTICAL_SCROLLBAR_AS_NEEDED, HORIZONTAL_SCROLLBAR_AS_NEEDED)
-        val gridConstraints = GridConstraints()
-        gridConstraints.fill = GridConstraints.FILL_BOTH
-        panel.add(jbScrollPane, gridConstraints)
+        val scrollConstraints = GridConstraints()
+        scrollConstraints.row = 1
+        scrollConstraints.fill = GridConstraints.FILL_BOTH
+
+        val toolbar = JPanel(BorderLayout())
+        val panelConstraints = GridConstraints()
+        panelConstraints.row = 0
+        panelConstraints.fill = GridConstraints.FILL_HORIZONTAL
+
+
+
+        panel.add(toolbar, panelConstraints)
+        panel.add(jbScrollPane, scrollConstraints)
+
         return panel
     }
 
