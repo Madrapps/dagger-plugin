@@ -17,24 +17,28 @@ class DaggerToolWindow : ToolWindowFactory, DaggerView {
 
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
         println("DaggerToolWindow - Created")
-        val rootNode = DefaultMutableTreeNode("Sample root node")
-        for (i in 0..4) {
-            val node = DefaultMutableTreeNode("Node #" + (i + 1))
-            rootNode.add(node)
-        }
-        treeModel = ListTreeTableModel(rootNode, arrayOf(TreeColumnInfo("1")))
-        treeList = TreeTable(treeModel)
-        toolWindow.contentManager.component.add(treeList)
+//        val rootNode = DefaultMutableTreeNode("Sample root node")
+//        for (i in 0..4) {
+//            val node = DefaultMutableTreeNode("Node #" + (i + 1))
+//            rootNode.add(node)
+//        }
+//        treeModel = ListTreeTableModel(rootNode, arrayOf(TreeColumnInfo("1")))
+//        treeList = TreeTable(treeModel)
+//
+//
+//
+//        toolWindow.contentManager.component.add(treeList)
 
         Presenter.setView(this)
+        MyPanel(toolWindow)
     }
 
     override fun updateTree(list: List<String>) {
-        val rootNode = DefaultMutableTreeNode("Sample root node")
-        list.forEach {
-            rootNode.add(DefaultMutableTreeNode(it))
-        }
-        treeModel.setRoot(rootNode)
-        treeModel.reload(rootNode)
+//        val rootNode = DefaultMutableTreeNode("Sample root node")
+//        list.forEach {
+//            rootNode.add(DefaultMutableTreeNode(it))
+//        }
+//        treeModel.setRoot(rootNode)
+//        treeModel.reload(rootNode)
     }
 }
