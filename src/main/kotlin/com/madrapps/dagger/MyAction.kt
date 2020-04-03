@@ -22,6 +22,7 @@ import kotlin.system.measureTimeMillis
 class MyAction : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
         println("TTRRTT, ActionPerformed")
+        Presenter.reset()
         val lo = measureTimeMillis {
             val project = e.project ?: throw IllegalArgumentException()
 

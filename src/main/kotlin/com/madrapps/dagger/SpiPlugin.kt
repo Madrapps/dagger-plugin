@@ -1,13 +1,8 @@
 package com.madrapps.dagger
 
-import com.squareup.javapoet.ClassName
 import dagger.model.BindingGraph
 import dagger.spi.BindingGraphPlugin
 import dagger.spi.DiagnosticReporter
-import java.util.stream.Collectors
-import javax.annotation.processing.Filer
-import javax.lang.model.util.Elements
-import javax.lang.model.util.Types
 
 class SpiPlugin : BindingGraphPlugin {
 
@@ -23,6 +18,7 @@ class SpiPlugin : BindingGraphPlugin {
         println("Binding Keys - ${bindingGraph.bindings().map { it.key() }}")
         println("------------------------------------------------------------\n")
 
-        Presenter.updateView(bindingGraph.bindings().map { it.key().toString() })
+//        Presenter.updateView(bindingGraph.bindings().map { it.key().toString() })
+        Presenter.addBindings(bindingGraph)
     }
 }
