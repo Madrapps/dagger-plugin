@@ -1,4 +1,4 @@
-package com.madrapps.dagger
+package com.madrapps.dagger.actions
 
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -7,6 +7,8 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import com.intellij.util.PathUtil
+import com.madrapps.dagger.Presenter
+import com.madrapps.dagger.SpiPlugin
 import dagger.android.processor.AndroidProcessor
 import dagger.internal.DaggerCollections
 import dagger.internal.codegen.ComponentProcessor
@@ -19,7 +21,12 @@ import java.io.File
 import javax.tools.*
 import kotlin.system.measureTimeMillis
 
-class MyAction : AnAction() {
+class RefreshAction : AnAction() {
+
+    companion object {
+        const val ID = "com.madrapps.dagger.actions.RefreshAction"
+    }
+
     override fun actionPerformed(e: AnActionEvent) {
         println("TTRRTT, ActionPerformed")
         Presenter.reset()
