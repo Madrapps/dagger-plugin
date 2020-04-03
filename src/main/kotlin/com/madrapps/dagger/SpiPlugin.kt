@@ -16,18 +16,12 @@ class SpiPlugin : BindingGraphPlugin {
         diagnosticReporter: DiagnosticReporter
     ) {
         val rootComponentNode = bindingGraph.rootComponentNode()
+        println("------------------------------------------------------------")
         println("RootComponent - $rootComponentNode")
-        val componentElement =
-            rootComponentNode.componentPath().currentComponent()
-        val componentName = ClassName.get(componentElement)
-        val dumb: String? = null
-        //        dumb.equals(dumb);
-        //println(" - |-| - " + componentName.simpleName())
-        val map = bindingGraph.bindings().map { it.key().type() }
-        println("Keys = $map")
-        for (node in bindingGraph.bindings().stream().distinct().collect(Collectors.toList())) {
-            //println(" --- " + node.javaClass.simpleName)
-        }
+        val componentNodes = bindingGraph.componentNodes()
+        println("ComponentNodes - ${componentNodes.size} - $componentNodes")
+        println("Binding Keys - ${bindingGraph.bindings().map { it.key() }}")
+        println("------------------------------------------------------------\n")
 
         Presenter.updateView(bindingGraph.bindings().map { it.key().toString() })
     }
