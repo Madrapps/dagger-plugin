@@ -38,7 +38,7 @@ class RefreshAction : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
         println("TTRRTT, ActionPerformed")
         val project = e.project ?: throw IllegalArgumentException()
-        Presenter.reset()
+        Presenter.reset(project)
 
         val validModules = project.allModules().filter { it.sourceRoots.isNotEmpty() }
         val map = validModules.map { module ->

@@ -1,26 +1,21 @@
 package com.madrapps.dagger
 
-import com.intellij.ui.treeStructure.treetable.ListTreeTableModelOnColumns
-import com.intellij.util.ui.ColumnInfo
+import com.intellij.openapi.project.Project
+import com.intellij.psi.PsiManager
+import com.intellij.psi.util.ClassUtil
+import com.madrapps.dagger.toolwindow.MyTreeNode
 import com.sun.tools.javac.code.Symbol
 import dagger.model.BindingGraph
 import javax.swing.tree.DefaultMutableTreeNode
+import javax.swing.tree.DefaultTreeModel
 
 object Presenter {
 
-    val treeModel = ListTreeTableModelOnColumns(null, ColumnInfo.EMPTY_ARRAY)
+    val treeModel = DefaultTreeModel(null)
+    lateinit var project: Project
 
-    private lateinit var daggerView: DaggerView
-
-    fun setView(daggerView: DaggerView) {
-        this.daggerView = daggerView
-    }
-
-    fun updateView(list: List<String>) {
-        daggerView.updateTree(list)
-    }
-
-    fun reset() {
+    fun reset(project: Project) {
+        this.project = project
         treeModel.setRoot(null)
         treeModel.reload()
     }
@@ -30,7 +25,18 @@ object Presenter {
         val componentNodes = bindingGraph.componentNodes()
         val keys = bindingGraph.bindings().map { it.key() }
 
-        val componentNode = DefaultMutableTreeNode((rootComponentNode.componentPath().currentComponent() as Symbol).name)
+
+        val name = (rootComponentNode.componentPath().currentComponent() as Symbol.ClassSymbol).flatname.toString()
+        val psiClass = ClassUtil.findPsiClass(PsiManager.getInstance(project), name)
+
+
+        val componentNode = DefaultMutableTreeNode(
+            MyTreeNode(
+                project,
+                psiClass,
+                (rootComponentNode.componentPath().currentComponent() as Symbol).name.toString()
+            )
+        )
         keys.forEach {
             val keyNode = DefaultMutableTreeNode(it)
             componentNode.add(keyNode)
@@ -44,9 +50,4 @@ object Presenter {
         (root as? DefaultMutableTreeNode)?.add(componentNode)
         treeModel.reload()
     }
-}
-
-interface DaggerView {
-
-    fun updateTree(list: List<String>)
 }
