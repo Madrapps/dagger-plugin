@@ -2,13 +2,16 @@ package com.madrapps.dagger.services.impl
 
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
+import com.intellij.psi.PsiElement
 import com.madrapps.dagger.*
 import com.madrapps.dagger.services.DaggerService
 import com.madrapps.dagger.services.service
 import com.madrapps.dagger.toolwindow.DaggerNode
 import com.sun.tools.javac.code.Symbol
+import com.sun.tools.javac.code.Type
 import dagger.model.BindingGraph
 import dagger.model.DependencyRequest
+import javax.lang.model.element.Element
 import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.DefaultTreeModel
 
@@ -54,14 +57,9 @@ class DaggerServiceImpl(private val project: Project) : DaggerService {
         val key = dr.key()
         val binding = bindingGraph.bindings(key).first()
         binding.bindingElement().ifPresent { element ->
-            if (element is Symbol.MethodSymbol) {
-                currentNode = addNode(dr, element, isEntryPoint)
-                parentNode.add(currentNode)
-            } else if (element is Symbol.VarSymbol) {
-                currentNode = addNode(dr, element, isEntryPoint)
-                parentNode.add(currentNode)
-            } else if (element is Symbol.ClassSymbol) {
-                currentNode = addNode(dr, element, isEntryPoint)
+            val daggerNode = dr.createNode(element, isEntryPoint)
+            if (daggerNode != null) {
+                currentNode = daggerNode
                 parentNode.add(currentNode)
             }
         }
@@ -70,53 +68,59 @@ class DaggerServiceImpl(private val project: Project) : DaggerService {
         }
     }
 
-    private fun addNode(dr: DependencyRequest, element: Symbol.ClassSymbol, isEntryPoint: Boolean): DaggerNode {
-        val psiElement = element.toPsiClass(project)!!
-        val name = psiElement.name ?: element.simpleName.toString()
-        val sourceMethod = entryMethod(isEntryPoint, dr)
-        return DaggerNode(
-            project,
-            name,
-            psiElement,
-            sourceMethod
-        )
-    }
-
-    private fun addNode(dr: DependencyRequest, element: Symbol.MethodSymbol, isEntryPoint: Boolean): DaggerNode {
-        val psiElement = element.toPsiMethod(project)!!
-        val name = if (psiElement.isConstructor) {
-            psiElement.name
-        } else {
-            psiElement.returnType?.presentableText ?: "NULL"
-        }
-        val sourceMethod = entryMethod(isEntryPoint, dr)
-        return DaggerNode(
-            project,
-            name,
-            psiElement,
-            sourceMethod
-        )
-    }
-
-    private fun addNode(dr: DependencyRequest, element: Symbol.VarSymbol, isEntryPoint: Boolean): DaggerNode {
-        val psiElement = element.toPsiParameter(project)!!
-        val sourceMethod = entryMethod(isEntryPoint, dr)
-        return DaggerNode(
-            project,
-            psiElement.type.presentableText,
-            psiElement,
-            sourceMethod
-        )
-    }
-
-    private fun entryMethod(isEntryPoint: Boolean, dr: DependencyRequest): String? {
-        return if (isEntryPoint) {
-            val element = dr.requestElement().orNull()
-            if (element is Symbol.MethodSymbol) {
-                "${element.simpleName}(${element.params.joinToString(",") { it.type.tsym.simpleName }})"
-            } else {
-                element?.toString()
+    private fun DependencyRequest.createNode(element: Element, isEntryPoint: Boolean): DaggerNode? {
+        val name: String
+        val psiElement: PsiElement
+        when (element) {
+            is Symbol.ClassSymbol -> {
+                psiElement = element.toPsiClass(project)!!
+                name = requestElement().orNull()?.name() ?: psiElement.name ?: element.simpleName.toString()
             }
+            is Symbol.MethodSymbol -> {
+                psiElement = element.toPsiMethod(project)!!
+                name = requestElement().orNull()?.name() ?: if (psiElement.isConstructor) {
+                    psiElement.name
+                } else {
+                    psiElement.returnType?.presentableText ?: "NULL"
+                }
+            }
+            is Symbol.VarSymbol -> {
+                psiElement = element.toPsiParameter(project)!!
+                name = requestElement().orNull()?.name() ?: psiElement.type.presentableText
+            }
+            else -> return null
+        }
+        val sourceMethod = if (isEntryPoint) sourceMethod() else null
+        return DaggerNode(
+            project,
+            name,
+            psiElement,
+            sourceMethod
+        )
+    }
+
+    private fun DependencyRequest.sourceMethod(): String? {
+        val element = requestElement().orNull()
+        return if (element is Symbol.MethodSymbol) {
+            "${element.simpleName}(${element.params.joinToString(",") { it.type.tsym.simpleName }})"
+        } else {
+            element?.toString()
+        }
+    }
+
+    private fun Element.name(): String? {
+        return if (this is Symbol.MethodSymbol) {
+            returnType.tsym.simpleName.toString()
+        } else if (this is Symbol.VarSymbol) {
+            val classType = type as? Type.ClassType
+            if (classType != null) {
+                var name = classType.tsym.simpleName.toString()
+                val params = classType.typarams_field
+                if (params.isNotEmpty()) {
+                    name += "<${params.joinToString(",") { it.tsym.simpleName }}>"
+                }
+                return name
+            } else null
         } else null
     }
 }
