@@ -18,7 +18,6 @@ class SpiPlugin : BindingGraphPlugin {
         println("Binding Keys - ${bindingGraph.bindings().map { it.key() }}")
         println("------------------------------------------------------------\n")
 
-//        Presenter.updateView(bindingGraph.bindings().map { it.key().toString() })
         Presenter.addBindings(bindingGraph)
     }
 }
