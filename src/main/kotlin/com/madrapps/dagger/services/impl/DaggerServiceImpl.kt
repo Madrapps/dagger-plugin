@@ -60,11 +60,28 @@ class DaggerServiceImpl(private val project: Project) : DaggerService {
             } else if (element is Symbol.VarSymbol) {
                 currentNode = addNode(dr, element, isEntryPoint)
                 parentNode.add(currentNode)
+            } else if (element is Symbol.ClassSymbol) {
+                currentNode = addNode(dr, element, isEntryPoint)
+                parentNode.add(currentNode)
             }
         }
         binding.dependencies().forEach {
             addNodes(it, bindingGraph, currentNode, false)
         }
+    }
+
+    private fun addNode(dr: DependencyRequest, element: Symbol.ClassSymbol, isEntryPoint: Boolean): DaggerNode {
+        val psiElement = element.toPsiClass(project)!!
+        val name = psiElement.name ?: element.simpleName.toString()
+        val sourceMethod = if (isEntryPoint) {
+            dr.requestElement().orNull()?.toString()
+        } else null
+        return DaggerNode(
+            project,
+            name,
+            psiElement,
+            sourceMethod
+        )
     }
 
     private fun addNode(dr: DependencyRequest, element: Symbol.MethodSymbol, isEntryPoint: Boolean): DaggerNode {
