@@ -15,8 +15,8 @@ import com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH
 import com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED
 import com.intellij.uiDesigner.core.GridLayoutManager
 import com.intellij.util.EditSourceOnDoubleClickHandler
-import com.madrapps.dagger.Presenter
 import com.madrapps.dagger.actions.RefreshAction
+import com.madrapps.dagger.services.service
 import java.awt.BorderLayout
 import java.awt.Insets
 import javax.swing.JPanel
@@ -28,11 +28,11 @@ class DaggerToolWindow : ToolWindowFactory {
 
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
         println("DaggerToolWindow - Created")
-        MyPanel(toolWindow)
+        MyPanel(toolWindow, project)
     }
 }
 
-class MyPanel(toolWindow: ToolWindow) : SimpleToolWindowPanel(true, true) {
+class MyPanel(toolWindow: ToolWindow, private val project: Project) : SimpleToolWindowPanel(true, true) {
 
     private lateinit var tree: DaggerTree
 
@@ -57,15 +57,13 @@ class MyPanel(toolWindow: ToolWindow) : SimpleToolWindowPanel(true, true) {
         val toolbar = JPanel(BorderLayout())
         initToolbar(toolbar)
 
-        tree = DaggerTree(Presenter.treeModel)
+        tree = DaggerTree(project.service.treeModel)
         tree.isRootVisible = false
         tree.toggleClickCount = 3
         tree.selectionModel.selectionMode = SINGLE_TREE_SELECTION
         EditSourceOnDoubleClickHandler.install(tree)
 
         val jbScrollPane = JBScrollPane(tree, VERTICAL_SCROLLBAR_AS_NEEDED, HORIZONTAL_SCROLLBAR_AS_NEEDED)
-
-//        tree.cellRenderer =
 
         panel.add(toolbar, GridConstraints().apply {
             row = 0

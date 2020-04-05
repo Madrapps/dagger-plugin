@@ -15,8 +15,8 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import com.intellij.tasks.TaskManager
 import com.intellij.util.PathUtil
-import com.madrapps.dagger.Presenter
 import com.madrapps.dagger.SpiPlugin
+import com.madrapps.dagger.services.service
 import dagger.android.processor.AndroidProcessor
 import dagger.internal.DaggerCollections
 import dagger.internal.codegen.ComponentProcessor
@@ -38,7 +38,7 @@ class RefreshAction : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
         println("TTRRTT, ActionPerformed")
         val project = e.project ?: throw IllegalArgumentException()
-        Presenter.reset(project)
+        project.service.reset()
 
         val validModules = project.allModules().filter { it.sourceRoots.isNotEmpty() }
         val map = validModules.map { module ->
@@ -60,7 +60,7 @@ class RefreshAction : AnAction() {
                     override fun run(indicator: ProgressIndicator) {
                         val lo = measureTimeMillis {
                             map.forEach { (classes, classpath, output) ->
-                                compile(classes, classpath, output)
+                                compile(classes, classpath, output, project)
                             }
                         }
                         println(" Time Taken - $lo")
@@ -75,7 +75,12 @@ class RefreshAction : AnAction() {
         }
     }
 
-    private fun compile(classes: List<String>, classpath: MutableList<File>, outputDirectory: File) {
+    private fun compile(
+        classes: List<String>,
+        classpath: MutableList<File>,
+        outputDirectory: File,
+        project: Project
+    ) {
         val compiler = ToolProvider.getSystemJavaCompiler()
         val diagnostics = DiagnosticCollector<JavaFileObject>()
         val fileManager: StandardJavaFileManager = compiler.getStandardFileManager(diagnostics, null, null)
@@ -83,7 +88,7 @@ class RefreshAction : AnAction() {
         fileManager.setLocation(StandardLocation.CLASS_PATH, classpath)
 
         val task = compiler.getTask(null, fileManager, diagnostics, null, classes, null)
-        task.setProcessors(listOf(ComponentProcessor.forTesting(SpiPlugin()), AndroidProcessor()))
+        task.setProcessors(listOf(ComponentProcessor.forTesting(SpiPlugin(project)), AndroidProcessor()))
         task.call()
 
         for (diagnostic in diagnostics.diagnostics) {

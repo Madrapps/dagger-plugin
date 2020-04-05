@@ -1,10 +1,12 @@
 package com.madrapps.dagger
 
+import com.intellij.openapi.project.Project
+import com.madrapps.dagger.services.service
 import dagger.model.BindingGraph
 import dagger.spi.BindingGraphPlugin
 import dagger.spi.DiagnosticReporter
 
-class SpiPlugin : BindingGraphPlugin {
+class SpiPlugin(private val project: Project) : BindingGraphPlugin {
 
     override fun visitGraph(
         bindingGraph: BindingGraph,
@@ -18,6 +20,6 @@ class SpiPlugin : BindingGraphPlugin {
         println("Binding Keys - ${bindingGraph.bindings().map { it.key() }}")
         println("------------------------------------------------------------\n")
 
-        Presenter.addBindings(bindingGraph)
+        project.service.addBindings(bindingGraph)
     }
 }

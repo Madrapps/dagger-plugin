@@ -16,13 +16,9 @@
 
         <toolWindow anchor="right" factoryClass="com.madrapps.dagger.toolwindow.DaggerToolWindow"
                     icon="/icons/greenrobot.png" id="Dagger"/>
+        <projectService serviceInterface="com.madrapps.dagger.services.DaggerService"
+                        serviceImplementation="com.madrapps.dagger.services.impl.DaggerServiceImpl"/>
     </extensions>
-
-    <project-components>
-        <component>
-            <implementation-class>com.madrapps.dagger.MyComponent</implementation-class>
-        </component>
-    </project-components>
 
     <actions>
         <action id="com.madrapps.dagger.actions.RefreshAction"

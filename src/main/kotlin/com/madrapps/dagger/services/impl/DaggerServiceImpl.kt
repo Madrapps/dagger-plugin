@@ -1,9 +1,12 @@
-package com.madrapps.dagger
+package com.madrapps.dagger.services.impl
 
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiManager
 import com.intellij.psi.util.ClassUtil
+import com.madrapps.dagger.*
+import com.madrapps.dagger.services.DaggerService
+import com.madrapps.dagger.services.service
 import com.madrapps.dagger.toolwindow.DaggerNode
 import com.sun.tools.javac.code.Symbol
 import dagger.model.BindingGraph
@@ -11,18 +14,16 @@ import dagger.model.DependencyRequest
 import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.DefaultTreeModel
 
-object Presenter {
+class DaggerServiceImpl(private val project: Project) : DaggerService {
 
-    val treeModel = DefaultTreeModel(null)
-    private lateinit var project: Project
+    override val treeModel = DefaultTreeModel(null)
 
-    fun reset(project: Project) {
-        this.project = project
+    override fun reset() {
         treeModel.setRoot(null)
         treeModel.reload()
     }
 
-    fun addBindings(bindingGraph: BindingGraph) {
+    override fun addBindings(bindingGraph: BindingGraph) {
 
         ApplicationManager.getApplication().runReadAction {
             val rootComponentNode = bindingGraph.rootComponentNode()
@@ -37,7 +38,7 @@ object Presenter {
                 addNodes(it, bindingGraph, componentNode)
             }
 
-            var root = treeModel.root
+            var root = project.service.treeModel.root
             if (root == null) {
                 root = DefaultMutableTreeNode("")
                 treeModel.setRoot(root)
