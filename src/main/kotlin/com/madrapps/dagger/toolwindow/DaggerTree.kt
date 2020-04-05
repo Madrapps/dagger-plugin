@@ -33,8 +33,7 @@ class DaggerNode(
 private class SimplerNode(
     project: Project, val element: PsiElement, private val content: String,
     private val sourceMethod: String?
-) :
-    SimpleNode(project) {
+) : SimpleNode(project) {
 
     init {
         icon = AllIcons.Nodes.Class

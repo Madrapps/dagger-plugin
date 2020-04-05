@@ -2,12 +2,9 @@ package com.madrapps.dagger.services.impl
 
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
-import com.madrapps.dagger.name
-import com.madrapps.dagger.orNull
+import com.madrapps.dagger.*
 import com.madrapps.dagger.services.DaggerService
 import com.madrapps.dagger.services.service
-import com.madrapps.dagger.toPsiClass
-import com.madrapps.dagger.toPsiMethod
 import com.madrapps.dagger.toolwindow.DaggerNode
 import com.sun.tools.javac.code.Symbol
 import dagger.model.BindingGraph
@@ -60,6 +57,9 @@ class DaggerServiceImpl(private val project: Project) : DaggerService {
             if (element is Symbol.MethodSymbol) {
                 currentNode = addNode(dr, element, isEntryPoint)
                 parentNode.add(currentNode)
+            } else if (element is Symbol.VarSymbol) {
+                currentNode = addNode(dr, element, isEntryPoint)
+                parentNode.add(currentNode)
             }
         }
         binding.dependencies().forEach {
@@ -68,11 +68,11 @@ class DaggerServiceImpl(private val project: Project) : DaggerService {
     }
 
     private fun addNode(dr: DependencyRequest, element: Symbol.MethodSymbol, isEntryPoint: Boolean): DaggerNode {
-        val psiMethod = element.toPsiMethod(project)!!
-        val name = if (psiMethod.isConstructor) {
-            psiMethod.name
+        val psiElement = element.toPsiMethod(project)!!
+        val name = if (psiElement.isConstructor) {
+            psiElement.name
         } else {
-            psiMethod.returnType?.presentableText ?: "NULL"
+            psiElement.returnType?.presentableText ?: "NULL"
         }
         val sourceMethod = if (isEntryPoint) {
             dr.requestElement().orNull()?.toString()
@@ -80,7 +80,20 @@ class DaggerServiceImpl(private val project: Project) : DaggerService {
         return DaggerNode(
             project,
             name,
-            psiMethod,
+            psiElement,
+            sourceMethod
+        )
+    }
+
+    private fun addNode(dr: DependencyRequest, element: Symbol.VarSymbol, isEntryPoint: Boolean): DaggerNode {
+        val psiElement = element.toPsiParameter(project)!!
+        val sourceMethod = if (isEntryPoint) {
+            dr.requestElement().orNull()?.toString()
+        } else null
+        return DaggerNode(
+            project,
+            psiElement.type.presentableText,
+            psiElement,
             sourceMethod
         )
     }

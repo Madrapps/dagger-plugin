@@ -1,9 +1,7 @@
 package com.madrapps.dagger
 
 import com.intellij.openapi.project.Project
-import com.intellij.psi.PsiClass
-import com.intellij.psi.PsiManager
-import com.intellij.psi.PsiMethod
+import com.intellij.psi.*
 import com.intellij.psi.impl.light.LightMethodBuilder
 import com.intellij.psi.util.ClassUtil
 import com.sun.tools.javac.code.Symbol
@@ -33,6 +31,23 @@ fun Element.getClass(): Symbol.ClassSymbol {
         parent = parent.enclosingElement
     }
     return parent
+}
+
+fun Symbol.VarSymbol.getMethod(): Symbol.MethodSymbol {
+    var parent = enclosingElement
+    while (parent !is Symbol.MethodSymbol) {
+        parent = parent.enclosingElement
+    }
+    return parent
+}
+
+fun Symbol.VarSymbol.toPsiParameter(project: Project): PsiParameter? {
+    val method = getMethod()
+    val psiMethod = method.toPsiMethod(project)
+    if (psiMethod != null) {
+        return psiMethod.parameterList.parameters.find { it.type.canonicalText == this.type.toString() }
+    }
+    return null
 }
 
 fun Symbol.ClassSymbol.toPsiClass(project: Project): PsiClass? {
