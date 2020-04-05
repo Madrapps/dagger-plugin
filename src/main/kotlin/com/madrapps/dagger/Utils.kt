@@ -23,6 +23,10 @@ val ComponentNode.qualifiedName: String
         return componentPath().currentComponent().qualifiedName.toString()
     }
 
+fun ComponentNode.toPsiClass(project: Project): PsiClass? {
+    return ClassUtil.findPsiClass(PsiManager.getInstance(project), qualifiedName)
+}
+
 fun Element.getClass(): Symbol.ClassSymbol {
     var parent = enclosingElement
     while (parent !is Symbol.ClassSymbol) {

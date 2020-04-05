@@ -22,6 +22,7 @@ class DaggerTree(treeModel: TreeModel) : SimpleTree(treeModel), DataProvider {
     }
 }
 
+// TODO Should we make "PsiElement" as nullable?
 class DaggerNode(
     project: Project,
     name: String,
