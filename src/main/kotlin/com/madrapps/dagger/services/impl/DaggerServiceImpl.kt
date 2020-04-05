@@ -73,9 +73,7 @@ class DaggerServiceImpl(private val project: Project) : DaggerService {
     private fun addNode(dr: DependencyRequest, element: Symbol.ClassSymbol, isEntryPoint: Boolean): DaggerNode {
         val psiElement = element.toPsiClass(project)!!
         val name = psiElement.name ?: element.simpleName.toString()
-        val sourceMethod = if (isEntryPoint) {
-            dr.requestElement().orNull()?.toString()
-        } else null
+        val sourceMethod = entryMethod(isEntryPoint, dr)
         return DaggerNode(
             project,
             name,
@@ -91,9 +89,7 @@ class DaggerServiceImpl(private val project: Project) : DaggerService {
         } else {
             psiElement.returnType?.presentableText ?: "NULL"
         }
-        val sourceMethod = if (isEntryPoint) {
-            dr.requestElement().orNull()?.toString()
-        } else null
+        val sourceMethod = entryMethod(isEntryPoint, dr)
         return DaggerNode(
             project,
             name,
@@ -104,14 +100,23 @@ class DaggerServiceImpl(private val project: Project) : DaggerService {
 
     private fun addNode(dr: DependencyRequest, element: Symbol.VarSymbol, isEntryPoint: Boolean): DaggerNode {
         val psiElement = element.toPsiParameter(project)!!
-        val sourceMethod = if (isEntryPoint) {
-            dr.requestElement().orNull()?.toString()
-        } else null
+        val sourceMethod = entryMethod(isEntryPoint, dr)
         return DaggerNode(
             project,
             psiElement.type.presentableText,
             psiElement,
             sourceMethod
         )
+    }
+
+    private fun entryMethod(isEntryPoint: Boolean, dr: DependencyRequest): String? {
+        return if (isEntryPoint) {
+            val element = dr.requestElement().orNull()
+            if (element is Symbol.MethodSymbol) {
+                "${element.simpleName}(${element.params.joinToString(",") { it.type.tsym.simpleName }})"
+            } else {
+                element?.toString()
+            }
+        } else null
     }
 }
