@@ -31,7 +31,7 @@ class DaggerServiceImpl(private val project: Project) : DaggerService {
             val componentNodes = bindingGraph.componentNodes()
 
             val componentNode =
-                DaggerNode(project, rootComponentNode.name, rootComponentNode.toPsiClass(project)!!, null)
+                DaggerNode(project, rootComponentNode.name, rootComponentNode.toPsiClass(project)!!, null, "entry")
 
             rootComponentNode.entryPoints().forEach {
                 addNodes(it, bindingGraph, componentNode, true)
@@ -57,7 +57,7 @@ class DaggerServiceImpl(private val project: Project) : DaggerService {
         val key = dr.key()
         val binding = bindingGraph.bindings(key).first()
         binding.bindingElement().ifPresent { element ->
-            val daggerNode = dr.createNode(element, isEntryPoint)
+            val daggerNode = dr.createNode(element, isEntryPoint, "${dr.kind()} / ${binding.kind()}")
             if (daggerNode != null) {
                 currentNode = daggerNode
                 parentNode.add(currentNode)
@@ -68,7 +68,7 @@ class DaggerServiceImpl(private val project: Project) : DaggerService {
         }
     }
 
-    private fun DependencyRequest.createNode(element: Element, isEntryPoint: Boolean): DaggerNode? {
+    private fun DependencyRequest.createNode(element: Element, isEntryPoint: Boolean, type: String): DaggerNode? {
         val name: String
         val psiElement: PsiElement
         when (element) {
@@ -95,7 +95,8 @@ class DaggerServiceImpl(private val project: Project) : DaggerService {
             project,
             name,
             psiElement,
-            sourceMethod
+            sourceMethod,
+            type
         )
     }
 

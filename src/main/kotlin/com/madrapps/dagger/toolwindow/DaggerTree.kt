@@ -27,12 +27,13 @@ class DaggerNode(
     project: Project,
     name: String,
     element: PsiElement,
-    sourceMethod: String?
-) : DefaultMutableTreeNode(SimplerNode(project, element, name, sourceMethod))
+    sourceMethod: String?,
+    bindingType: String
+) : DefaultMutableTreeNode(SimplerNode(project, element, name, sourceMethod, bindingType))
 
 private class SimplerNode(
     project: Project, val element: PsiElement, private val content: String,
-    private val sourceMethod: String?
+    private val sourceMethod: String?, private val bindingType: String
 ) : SimpleNode(project) {
 
     init {
