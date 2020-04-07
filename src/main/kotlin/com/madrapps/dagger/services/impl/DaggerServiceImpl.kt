@@ -10,10 +10,15 @@ import com.madrapps.dagger.toolwindow.DaggerNode
 import com.sun.tools.javac.code.Attribute
 import com.sun.tools.javac.code.Symbol
 import com.sun.tools.javac.code.Type
+import dagger.MapKey
 import dagger.model.Binding
 import dagger.model.BindingGraph
 import dagger.model.BindingKind
 import dagger.model.DependencyRequest
+import dagger.multibindings.ClassKey
+import dagger.multibindings.IntKey
+import dagger.multibindings.LongKey
+import dagger.multibindings.StringKey
 import javax.lang.model.element.Element
 import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.DefaultTreeModel
@@ -64,8 +69,9 @@ class DaggerServiceImpl(private val project: Project) : DaggerService {
             val classType = dr.key().type() as? Type.ClassType
             if (classType != null) {
                 val name = classType.presentableName()
-                val psiElement = (dr.requestElement().orNull() as Symbol.VarSymbol).toPsiParameter(project)!!
-                currentNode = DaggerNode(project, name, psiElement, null, "${dr.kind()} / ${binding.kind()}")
+                val psiElement = dr.requestElement().orNull()?.toPsiElement(project)!!
+                currentNode =
+                    DaggerNode(project, name, psiElement, dr.sourceMethod(), "${dr.kind()} / ${binding.kind()}")
                 parentNode.add(currentNode)
             }
         } else {
@@ -103,9 +109,16 @@ class DaggerServiceImpl(private val project: Project) : DaggerService {
                     psiElement.returnType?.presentableText ?: "NULL"
                 }
                 if (parentBinding?.kind() == BindingKind.MULTIBOUND_MAP) {
-                    temp += " [${(element.annotationMirrors.find {
-                        (it.annotationType as Type.ClassType).tsym.qualifiedName.toString() == "dagger.multibindings.StringKey"
-                    } as Attribute.Compound).values.first().snd}]"
+                    val snd = element.annotationMirrors.find {
+                        keys.contains((it.annotationType as Type.ClassType).tsym.qualifiedName.toString()) ||
+                                it.type.tsym.annotationMirrors.find { (it.annotationType as Type.ClassType).tsym.qualifiedName.toString() == MapKey::class.java.name } != null
+                    }?.values?.first()?.snd
+                    val sndText = if (snd is Attribute.Enum) {
+                        "${snd.type.tsym.simpleName}.${snd.value.simpleName}"
+                    } else if (snd is Attribute.Class) {
+                        snd.classType.tsym.simpleName
+                    } else snd.toString()
+                    temp += " [$sndText]"
                 }
                 name = temp
             }
@@ -135,11 +148,11 @@ class DaggerServiceImpl(private val project: Project) : DaggerService {
     }
 
     private fun Element.name(): String? {
-        return if (this is Symbol.MethodSymbol) {
-            returnType.tsym.simpleName.toString()
-        } else if (this is Symbol.VarSymbol) {
-            (type as? Type.ClassType)?.presentableName()
-        } else null
+        return when (this) {
+            is Symbol.MethodSymbol -> returnType.tsym.simpleName.toString()
+            is Symbol.VarSymbol -> (type as? Type.ClassType)?.presentableName()
+            else -> null
+        }
     }
 
     private fun Type.ClassType.presentableName(): String {
@@ -150,4 +163,11 @@ class DaggerServiceImpl(private val project: Project) : DaggerService {
         }
         return name
     }
+
+    private val keys = listOf<String>(
+        StringKey::class.java.name,
+        IntKey::class.java.name,
+        LongKey::class.java.name,
+        ClassKey::class.java.name
+    )
 }

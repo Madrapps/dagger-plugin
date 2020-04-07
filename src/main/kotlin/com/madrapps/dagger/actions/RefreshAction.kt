@@ -60,7 +60,12 @@ class RefreshAction : AnAction() {
                     override fun run(indicator: ProgressIndicator) {
                         val lo = measureTimeMillis {
                             map.forEach { (classes, classpath, output) ->
-                                compile(classes, classpath, output, project)
+                                try {
+                                    compile(classes, classpath, output, project)
+                                } catch (e: Throwable) {
+                                    println("Exception Handled")
+                                    e.printStackTrace()
+                                }
                             }
                         }
                         println(" Time Taken - $lo")

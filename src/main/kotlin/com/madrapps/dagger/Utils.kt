@@ -75,3 +75,12 @@ fun Symbol.MethodSymbol.toPsiMethod(project: Project): PsiMethod? {
     }
     return null
 }
+
+fun Element.toPsiElement(project: Project): PsiElement? {
+    return when (this) {
+        is Symbol.VarSymbol -> toPsiParameter(project)
+        is Symbol.MethodSymbol -> toPsiMethod(project)
+        is Symbol.ClassSymbol -> toPsiClass(project)
+        else -> null
+    }
+}
