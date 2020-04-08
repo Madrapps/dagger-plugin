@@ -45,12 +45,7 @@ class DaggerServiceImpl(private val project: Project) : DaggerService {
                 addNodes(it, bindingGraph, componentNode, null, true)
             }
 
-            var root = project.service.treeModel.root
-            if (root == null) {
-                root = DefaultMutableTreeNode("")
-                treeModel.setRoot(root)
-            }
-            (root as? DefaultMutableTreeNode)?.add(componentNode)
+            rootNode?.add(componentNode)
             treeModel.reload()
         }
     }
@@ -65,13 +60,18 @@ class DaggerServiceImpl(private val project: Project) : DaggerService {
         var currentNode = parentNode
         val key = dr.key()
         val binding = bindingGraph.bindings(key).first()
-        if (binding.kind() == BindingKind.MULTIBOUND_MAP) {
+        if (binding.kind().isMultibinding) {
             val classType = dr.key().type() as? Type.ClassType
             if (classType != null) {
                 val name = classType.presentableName()
                 val psiElement = dr.requestElement().orNull()?.toPsiElement(project)!!
-                currentNode =
-                    DaggerNode(project, name, psiElement, dr.sourceMethod(), "${dr.kind()} / ${binding.kind()}")
+                currentNode = DaggerNode(
+                    project,
+                    name,
+                    psiElement,
+                    if (isEntryPoint) dr.sourceMethod() else null,
+                    "${dr.kind()} / ${binding.kind()}"
+                )
                 parentNode.add(currentNode)
             }
         } else {
@@ -101,6 +101,10 @@ class DaggerServiceImpl(private val project: Project) : DaggerService {
                 psiElement = element.toPsiClass(project)!!
                 name = requestElement().orNull()?.name() ?: psiElement.name ?: element.simpleName.toString()
             }
+            is Symbol.VarSymbol -> {
+                psiElement = element.toPsiParameter(project)!!
+                name = requestElement().orNull()?.name() ?: psiElement.type.presentableText
+            }
             is Symbol.MethodSymbol -> {
                 psiElement = element.toPsiMethod(project)!!
                 var temp = requestElement().orNull()?.name() ?: if (psiElement.isConstructor) {
@@ -113,18 +117,14 @@ class DaggerServiceImpl(private val project: Project) : DaggerService {
                         keys.contains((it.annotationType as Type.ClassType).tsym.qualifiedName.toString()) ||
                                 it.type.tsym.annotationMirrors.find { (it.annotationType as Type.ClassType).tsym.qualifiedName.toString() == MapKey::class.java.name } != null
                     }?.values?.first()?.snd
-                    val sndText = if (snd is Attribute.Enum) {
-                        "${snd.type.tsym.simpleName}.${snd.value.simpleName}"
-                    } else if (snd is Attribute.Class) {
-                        snd.classType.tsym.simpleName
-                    } else snd.toString()
+                    val sndText = when (snd) {
+                        is Attribute.Enum -> "${snd.type.tsym.simpleName}.${snd.value.simpleName}"
+                        is Attribute.Class -> snd.classType.tsym.simpleName
+                        else -> snd.toString()
+                    }
                     temp += " [$sndText]"
                 }
                 name = temp
-            }
-            is Symbol.VarSymbol -> {
-                psiElement = element.toPsiParameter(project)!!
-                name = requestElement().orNull()?.name() ?: psiElement.type.presentableText
             }
             else -> return null
         }
@@ -149,7 +149,7 @@ class DaggerServiceImpl(private val project: Project) : DaggerService {
 
     private fun Element.name(): String? {
         return when (this) {
-            is Symbol.MethodSymbol -> returnType.tsym.simpleName.toString()
+            is Symbol.MethodSymbol -> (returnType as? Type.ClassType)?.presentableName()
             is Symbol.VarSymbol -> (type as? Type.ClassType)?.presentableName()
             else -> null
         }
@@ -163,6 +163,16 @@ class DaggerServiceImpl(private val project: Project) : DaggerService {
         }
         return name
     }
+
+    private val rootNode: DefaultMutableTreeNode?
+        get() {
+            var root = project.service.treeModel.root
+            if (root == null) {
+                root = DefaultMutableTreeNode("")
+                treeModel.setRoot(root)
+            }
+            return root as? DefaultMutableTreeNode
+        }
 
     private val keys = listOf<String>(
         StringKey::class.java.name,
