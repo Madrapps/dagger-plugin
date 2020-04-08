@@ -8,7 +8,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.madrapps.dagger.*
 import com.madrapps.dagger.services.DaggerService
-import com.madrapps.dagger.services.log
 import com.madrapps.dagger.services.service
 import com.madrapps.dagger.toolwindow.DaggerNode
 import com.sun.tools.javac.code.Attribute
@@ -23,6 +22,7 @@ import dagger.multibindings.ClassKey
 import dagger.multibindings.IntKey
 import dagger.multibindings.LongKey
 import dagger.multibindings.StringKey
+import javax.inject.Qualifier
 import javax.lang.model.element.Element
 import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.DefaultTreeModel
@@ -138,6 +138,12 @@ class DaggerServiceImpl(private val project: Project) : DaggerService {
                         else -> snd.toString()
                     }
                     temp += " [$sndText]"
+                }
+                val snd = element.annotationMirrors.find {
+                    it.type.tsym.annotationMirrors.find { (it.annotationType as Type.ClassType).tsym.qualifiedName.toString() == Qualifier::class.java.name } != null
+                }
+                if (snd != null) {
+                    temp += "[${snd.type.tsym.simpleName}]"
                 }
                 name = temp
             }
