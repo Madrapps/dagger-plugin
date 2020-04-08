@@ -19,9 +19,15 @@ interface DaggerService {
             )
         }
     }
+
+    fun log(title: String, content: String)
 }
 
 val Project.service: DaggerService
     get() {
         return DaggerService.getInstance(this)
     }
+
+fun Project.log(title: String, content: String) {
+    service.log(title, content)
+}

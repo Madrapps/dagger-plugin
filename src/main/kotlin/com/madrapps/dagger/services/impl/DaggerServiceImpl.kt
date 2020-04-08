@@ -1,10 +1,14 @@
 package com.madrapps.dagger.services.impl
 
+import com.intellij.notification.Notification
+import com.intellij.notification.NotificationType
+import com.intellij.notification.Notifications
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.madrapps.dagger.*
 import com.madrapps.dagger.services.DaggerService
+import com.madrapps.dagger.services.log
 import com.madrapps.dagger.services.service
 import com.madrapps.dagger.toolwindow.DaggerNode
 import com.sun.tools.javac.code.Attribute
@@ -48,6 +52,17 @@ class DaggerServiceImpl(private val project: Project) : DaggerService {
             rootNode?.add(componentNode)
             treeModel.reload()
         }
+    }
+
+    override fun log(title: String, content: String) {
+        Notifications.Bus.notify(
+            Notification(
+                "Dagger",
+                title,
+                content,
+                NotificationType.INFORMATION
+            )
+        )
     }
 
     private fun addNodes(

@@ -17,6 +17,7 @@ import com.intellij.tasks.TaskManager
 import com.intellij.util.PathUtil
 import com.madrapps.dagger.SpiPlugin
 import com.madrapps.dagger.services.service
+import com.sun.tools.javac.api.JavacTool
 import dagger.android.processor.AndroidProcessor
 import dagger.internal.DaggerCollections
 import dagger.internal.codegen.ComponentProcessor
@@ -26,7 +27,10 @@ import org.jetbrains.kotlin.idea.util.sourceRoots
 import org.jetbrains.uast.UFile
 import org.jetbrains.uast.toUElement
 import java.io.File
-import javax.tools.*
+import javax.tools.DiagnosticCollector
+import javax.tools.JavaFileObject
+import javax.tools.StandardJavaFileManager
+import javax.tools.StandardLocation
 import kotlin.system.measureTimeMillis
 
 class RefreshAction : AnAction() {
@@ -45,12 +49,12 @@ class RefreshAction : AnAction() {
             val sources = module.sourceRoots.filter {
                 it.path.endsWith("main/java") || it.path.endsWith("main/kotlin")
             }
+            val cu = getCompilationUnits(sources)
             val classes = getClasses(sources, project)
             val outputDirectory = getClassOutput(module)
             val classpath: MutableList<File> = getClasspath(module)
-            Triple(classes, classpath, outputDirectory)
-        }.filter { it.first.isNotEmpty() }
-
+            Bundle(classes, classpath, outputDirectory, cu)
+        }.filter { it.classes.isNotEmpty() }
 
         val taskManager = project.getComponent(TaskManager::class.java)
         if (taskManager != null) {
@@ -59,9 +63,9 @@ class RefreshAction : AnAction() {
 
                     override fun run(indicator: ProgressIndicator) {
                         val lo = measureTimeMillis {
-                            map.forEach { (classes, classpath, output) ->
+                            map.forEach { (classes, classpath, output, cu) ->
                                 try {
-                                    compile(classes, classpath, output, project)
+                                    compile(classes, classpath, output, project, cu)
                                 } catch (e: Throwable) {
                                     println("Exception Handled")
                                     e.printStackTrace()
@@ -84,13 +88,18 @@ class RefreshAction : AnAction() {
         classes: List<String>,
         classpath: MutableList<File>,
         outputDirectory: File,
-        project: Project
+        project: Project,
+        cu: List<File>
     ) {
-        val compiler = ToolProvider.getSystemJavaCompiler()
+        val compiler = JavacTool.create()
         val diagnostics = DiagnosticCollector<JavaFileObject>()
         val fileManager: StandardJavaFileManager = compiler.getStandardFileManager(diagnostics, null, null)
         fileManager.setLocation(StandardLocation.CLASS_OUTPUT, listOf(outputDirectory))
         fileManager.setLocation(StandardLocation.CLASS_PATH, classpath)
+
+        val units = cu.flatMapTo(mutableListOf()) {
+            fileManager.getJavaFileObjects(it)
+        }
 
         val task = compiler.getTask(null, fileManager, diagnostics, null, classes, null)
         task.setProcessors(listOf(ComponentProcessor.forTesting(SpiPlugin(project)), AndroidProcessor()))
@@ -150,8 +159,23 @@ class RefreshAction : AnAction() {
                     }
                 }
         }
-
         return psiFiles.map(PsiFile::toUElement).filterIsInstance<UFile>().flatMap(UFile::classes)
             .mapNotNull { it.qualifiedName }
     }
+
+    private fun getCompilationUnits(
+        sources: List<VirtualFile>
+    ): List<File> {
+        return sources.flatMap {
+            File(it.path).walkTopDown()
+                .filter { it.isFile && (it.extension == "java") }.toList()
+        }
+    }
 }
+
+data class Bundle(
+    val classes: List<String>,
+    val classpath: MutableList<File>,
+    val outputDirectory: File,
+    val cu: List<File>
+)

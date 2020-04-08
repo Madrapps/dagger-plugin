@@ -45,7 +45,13 @@ fun Symbol.VarSymbol.toPsiParameter(project: Project): PsiParameter? {
     val method = getMethod()
     val psiMethod = method.toPsiMethod(project)
     if (psiMethod != null) {
-        return psiMethod.parameterList.parameters.find { it.type.canonicalText == this.type.toString() }
+        val parameters = psiMethod.parameterList.parameters.filter { it.type.canonicalText == type.toString() }
+        return if (parameters.size > 1) {
+            // This may not always work since we work with .class and not source files, the names may be obfuscated like 'arg1' or so.
+            parameters.find { it.name == simpleName.toString() }
+        } else {
+            parameters.firstOrNull()
+        }
     }
     return null
 }
