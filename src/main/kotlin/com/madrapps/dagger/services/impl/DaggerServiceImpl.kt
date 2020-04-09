@@ -42,15 +42,23 @@ class DaggerServiceImpl(private val project: Project) : DaggerService {
             val rootComponentNode = bindingGraph.rootComponentNode()
             val componentNodes = bindingGraph.componentNodes()
 
-            val componentNode =
-                DaggerNode(project, rootComponentNode.name, rootComponentNode.toPsiClass(project)!!, null, "entry")
-
-            rootComponentNode.entryPoints().forEach {
-                addNodes(it, bindingGraph, componentNode, null, true)
+            componentNodes.forEach {
+                val componentNode = DaggerNode(project, it.name, it.toPsiClass(project)!!, null, "entry")
+                it.entryPoints().forEach {
+                    addNodes(it, bindingGraph, componentNode, null, true)
+                }
+                rootNode?.add(componentNode)
+                treeModel.reload()
             }
-
-            rootNode?.add(componentNode)
-            treeModel.reload()
+//            val componentNode =
+//                DaggerNode(project, rootComponentNode.name, rootComponentNode.toPsiClass(project)!!, null, "entry")
+//
+//            rootComponentNode.entryPoints().forEach {
+//                addNodes(it, bindingGraph, componentNode, null, true)
+//            }
+//
+//            rootNode?.add(componentNode)
+//            treeModel.reload()
         }
     }
 
