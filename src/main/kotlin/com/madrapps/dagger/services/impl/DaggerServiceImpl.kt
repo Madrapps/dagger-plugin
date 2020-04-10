@@ -43,7 +43,7 @@ class DaggerServiceImpl(private val project: Project) : DaggerService {
             val componentNodes = bindingGraph.componentNodes()
 
             componentNodes.forEach {
-                val componentNode = DaggerNode(project, it.name, it.toPsiClass(project)!!, null, "entry")
+                val componentNode = DaggerNode(project, it.name, it.toPsiClass(project)!!, null, "entry", "")
                 it.entryPoints().forEach {
                     addNodes(it, bindingGraph, componentNode, null, true)
                 }
@@ -93,21 +93,30 @@ class DaggerServiceImpl(private val project: Project) : DaggerService {
                     name,
                     psiElement,
                     if (isEntryPoint) dr.sourceMethod() else null,
-                    "${dr.kind()} / ${binding.kind()}"
+                    "${dr.kind()} / ${binding.kind()}",
+                    key.toString()
                 )
                 parentNode.add(currentNode)
             }
         } else {
             binding.bindingElement().ifPresent { element ->
-                val daggerNode = dr.createNode(element, isEntryPoint, parentBinding, "${dr.kind()} / ${binding.kind()}")
+                val daggerNode = dr.createNode(
+                    element,
+                    isEntryPoint,
+                    parentBinding,
+                    "${dr.kind()} / ${binding.kind()}",
+                    key.toString()
+                )
                 if (daggerNode != null) {
                     currentNode = daggerNode
                     parentNode.add(currentNode)
                 }
             }
         }
-        binding.dependencies().forEach {
-            addNodes(it, bindingGraph, currentNode, binding, false)
+        if (!parentNode.isVisitedAlready(key.toString())) { // to avoid circular dependencies causing stackOverFlow
+            binding.dependencies().filterNot { it.key().toString().startsWith("dagger.android.") }.forEach {
+                addNodes(it, bindingGraph, currentNode, binding, false)
+            }
         }
     }
 
@@ -115,7 +124,8 @@ class DaggerServiceImpl(private val project: Project) : DaggerService {
         element: Element,
         isEntryPoint: Boolean,
         parentBinding: Binding?,
-        type: String
+        type: String,
+        key: String
     ): DaggerNode? {
         val name: String
         val psiElement: PsiElement
@@ -163,7 +173,8 @@ class DaggerServiceImpl(private val project: Project) : DaggerService {
             name,
             psiElement,
             sourceMethod,
-            type
+            type,
+            key
         )
     }
 

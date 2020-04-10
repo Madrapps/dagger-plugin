@@ -28,12 +28,30 @@ class DaggerNode(
     name: String,
     element: PsiElement,
     sourceMethod: String?,
-    bindingType: String
-) : DefaultMutableTreeNode(SimplerNode(project, element, name, sourceMethod, bindingType))
+    bindingType: String,
+    key: String
+) : DefaultMutableTreeNode(SimplerNode(project, element, name, sourceMethod, bindingType, key)) {
+
+    fun isVisitedAlready(key: String): Boolean {
+        var parent = this as DaggerNode?
+        while (parent != null) {
+            val simplerNode = parent.userObject as SimplerNode
+            if(simplerNode.key == key) {
+                return true
+            }
+            parent = parent.parent as? DaggerNode
+        }
+        return false
+    }
+}
 
 private class SimplerNode(
-    project: Project, val element: PsiElement, private val content: String,
-    private val sourceMethod: String?, private val bindingType: String
+    project: Project,
+    val element: PsiElement,
+    private val content: String,
+    private val sourceMethod: String?,
+    private val bindingType: String,
+    val key: String
 ) : SimpleNode(project) {
 
     init {
