@@ -8,7 +8,9 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.madrapps.dagger.*
 import com.madrapps.dagger.services.DaggerService
+import com.madrapps.dagger.services.NodeType
 import com.madrapps.dagger.services.service
+import com.madrapps.dagger.services.toNodeType
 import com.madrapps.dagger.toolwindow.DaggerNode
 import com.sun.tools.javac.code.Attribute
 import com.sun.tools.javac.code.Symbol
@@ -43,22 +45,14 @@ class DaggerServiceImpl(private val project: Project) : DaggerService {
             val componentNodes = bindingGraph.componentNodes()
 
             componentNodes.forEach {
-                val componentNode = DaggerNode(project, it.name, it.toPsiClass(project)!!, null, "entry", "")
+                val componentNode =
+                    DaggerNode(project, it.name, it.toPsiClass(project)!!, null, "", it.toNodeType())
                 it.entryPoints().forEach {
                     addNodes(it, bindingGraph, componentNode, null, true)
                 }
                 rootNode?.add(componentNode)
                 treeModel.reload()
             }
-//            val componentNode =
-//                DaggerNode(project, rootComponentNode.name, rootComponentNode.toPsiClass(project)!!, null, "entry")
-//
-//            rootComponentNode.entryPoints().forEach {
-//                addNodes(it, bindingGraph, componentNode, null, true)
-//            }
-//
-//            rootNode?.add(componentNode)
-//            treeModel.reload()
         }
     }
 
@@ -93,8 +87,8 @@ class DaggerServiceImpl(private val project: Project) : DaggerService {
                     name,
                     psiElement,
                     if (isEntryPoint) dr.sourceMethod() else null,
-                    "${dr.kind()} / ${binding.kind()}",
-                    key.toString()
+                    key.toString(),
+                    binding.kind().toNodeType()
                 )
                 parentNode.add(currentNode)
             }
@@ -104,8 +98,8 @@ class DaggerServiceImpl(private val project: Project) : DaggerService {
                     element,
                     isEntryPoint,
                     parentBinding,
-                    "${dr.kind()} / ${binding.kind()}",
-                    key.toString()
+                    key.toString(),
+                    binding.kind().toNodeType()
                 )
                 if (daggerNode != null) {
                     currentNode = daggerNode
@@ -124,8 +118,8 @@ class DaggerServiceImpl(private val project: Project) : DaggerService {
         element: Element,
         isEntryPoint: Boolean,
         parentBinding: Binding?,
-        type: String,
-        key: String
+        key: String,
+        nodeType: NodeType
     ): DaggerNode? {
         val name: String
         val psiElement: PsiElement
@@ -173,8 +167,8 @@ class DaggerServiceImpl(private val project: Project) : DaggerService {
             name,
             psiElement,
             sourceMethod,
-            type,
-            key
+            key,
+            nodeType
         )
     }
 
