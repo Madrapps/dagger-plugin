@@ -22,7 +22,7 @@ import java.awt.Insets
 import javax.swing.JPanel
 import javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED
 import javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED
-import javax.swing.tree.TreeSelectionModel.*
+import javax.swing.tree.TreeSelectionModel.SINGLE_TREE_SELECTION
 
 class DaggerToolWindow : ToolWindowFactory {
 
@@ -61,7 +61,9 @@ class MyPanel(toolWindow: ToolWindow, private val project: Project) : SimpleTool
         tree.isRootVisible = false
         tree.toggleClickCount = 3
         tree.selectionModel.selectionMode = SINGLE_TREE_SELECTION
-        EditSourceOnDoubleClickHandler.install(tree)
+        EditSourceOnDoubleClickHandler.install(tree) {
+            tree.expandPath(tree.selectionPath)
+        }
 
         val jbScrollPane = JBScrollPane(tree, VERTICAL_SCROLLBAR_AS_NEEDED, HORIZONTAL_SCROLLBAR_AS_NEEDED)
 
