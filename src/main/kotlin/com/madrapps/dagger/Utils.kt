@@ -1,11 +1,17 @@
 package com.madrapps.dagger
 
+import com.intellij.openapi.module.Module
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.roots.CompilerModuleExtension
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.*
 import com.intellij.psi.impl.light.LightMethodBuilder
 import com.intellij.psi.util.ClassUtil
 import com.sun.tools.javac.code.Symbol
 import dagger.model.BindingGraph.ComponentNode
+import org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments
+import org.jetbrains.kotlin.idea.facet.KotlinFacet
+import java.io.File
 import java.util.*
 import javax.lang.model.element.Element
 
@@ -89,4 +95,25 @@ fun Element.toPsiElement(project: Project): PsiElement? {
         is Symbol.ClassSymbol -> toPsiClass(project)
         else -> null
     }
+}
+
+fun Module.getKotlinOutputDir(): File? {
+    KotlinFacet.get(this)?.let {
+        val path = (it.configuration.settings.compilerArguments as? K2JVMCompilerArguments)?.destination
+        val file = if (path != null) File(path) else null
+        if (file?.exists() == true) return file
+    }
+    return null
+}
+
+fun Module.getCompilerOutputFile(): File? {
+    CompilerModuleExtension.getInstance(this)?.let {
+        return it.compilerOutputPath?.toFileIfExists()
+    }
+    return null
+}
+
+fun VirtualFile.toFileIfExists(): File? {
+    val file = File(this.path)
+    return if (file.exists()) file else null
 }

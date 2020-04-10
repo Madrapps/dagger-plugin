@@ -8,6 +8,7 @@ import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.progress.Task.Backgroundable
 import com.intellij.openapi.progress.impl.BackgroundableProcessIndicator
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.roots.ModuleRootManager
 import com.intellij.openapi.roots.OrderEnumerator
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
@@ -16,6 +17,8 @@ import com.intellij.psi.PsiManager
 import com.intellij.tasks.TaskManager
 import com.intellij.util.PathUtil
 import com.madrapps.dagger.SpiPlugin
+import com.madrapps.dagger.getCompilerOutputFile
+import com.madrapps.dagger.getKotlinOutputDir
 import com.madrapps.dagger.services.service
 import com.sun.tools.javac.api.JavacTool
 import dagger.android.processor.AndroidProcessor
@@ -123,23 +126,13 @@ class RefreshAction : AnAction() {
                 .map { File(it.path) }.toMutableList()
         val jarPathForClass = PathUtil.getJarPathForClass(DaggerCollections::class.java)
         files.add(File(jarPathForClass))
-        val kotlinClasses = File(module.externalProjectPath, "build/tmp/kotlin-classes")
-        if (kotlinClasses.exists()) {
-            kotlinClasses.listFiles()?.forEach {
-                files.add(it)
-            }
-        }
-        files.toMutableList().forEach {
-            val path = it.path
-            if (path.contains("build/intermediates/javac")) {
-                val newPath = path.substringBeforeLast("build/intermediates/javac") + "build/tmp/kotlin-classes"
-                val cl = File(newPath)
-                if (cl.exists()) {
-                    cl.listFiles()?.forEach {
-                        files.add(it)
-                    }
-                }
-            }
+
+        module.getKotlinOutputDir()?.let(files::add)
+        module.getCompilerOutputFile()?.let(files::add)
+
+        ModuleRootManager.getInstance(module).dependencies.forEach {
+            it.getKotlinOutputDir()?.let(files::add)
+            it.getCompilerOutputFile()?.let(files::add)
         }
         return files
     }
