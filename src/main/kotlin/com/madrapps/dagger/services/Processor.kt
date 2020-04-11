@@ -36,12 +36,13 @@ import kotlin.system.measureTimeMillis
 
 class Processor {
 
+    private lateinit var spiPlugin: SpiPlugin
     private var running = false
 
     fun isRunning(): Boolean = running
 
     fun process(project: Project) {
-        running = true
+        spiPlugin = SpiPlugin(project)
         project.log("Processor - Process Started in Thread ${Thread.currentThread()}")
 
         val validModules = project.allModules().filter { it.sourceRoots.isNotEmpty() }
@@ -65,18 +66,21 @@ class Processor {
                 object : Task.Backgroundable(project, "Analysing dagger dependencies", false) {
 
                     override fun run(indicator: ProgressIndicator) {
+                        running = true
                         project.log("Processor - Running background task")
                         val lo = measureTimeMillis {
                             map.forEach { (classes, classpath, output) ->
                                 try {
                                     compile(classes, classpath, output, project)
                                 } catch (e: Throwable) {
+                                    running = false
                                     project.log("Exception Handled")
                                     e.printStackTrace()
                                 }
                             }
                         }
                         project.log("Finish background task - $lo")
+                        running = false
                     }
 
                     override fun onFinished() {
@@ -103,7 +107,7 @@ class Processor {
 
         project.log("Processor - Compiling .[${classes.size}].[${classpath.size}].")
         val task = compiler.getTask(null, fileManager, diagnostics, null, classes, null)
-        task.setProcessors(listOf(ComponentProcessor.forTesting(SpiPlugin(project)), AndroidProcessor()))
+        task.setProcessors(listOf(ComponentProcessor.forTesting(spiPlugin), AndroidProcessor()))
         val success = task.call()
         project.log("Processor - Compile success? $success")
         for (diagnostic in diagnostics.diagnostics) {

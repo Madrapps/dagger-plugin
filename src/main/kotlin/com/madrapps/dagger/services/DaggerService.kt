@@ -2,14 +2,12 @@ package com.madrapps.dagger.services
 
 import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.project.Project
-import dagger.model.BindingGraph
-import javax.swing.tree.TreeModel
+import javax.swing.tree.DefaultTreeModel
 
 interface DaggerService {
 
-    val treeModel: TreeModel
+    val treeModel: DefaultTreeModel
     fun reset()
-    fun addBindings(bindingGraph: BindingGraph)
     fun process(project: Project)
 
     companion object {
@@ -35,6 +33,7 @@ fun Project.log(title: String, content: String) {
         service.log(title, content)
     }
 }
+
 fun Project.log(content: String) {
     log("Dagger Plugin", content)
 }

@@ -8,7 +8,9 @@ import com.intellij.psi.*
 import com.intellij.psi.impl.light.LightMethodBuilder
 import com.intellij.psi.util.ClassUtil
 import com.sun.tools.javac.code.Symbol
+import com.sun.tools.javac.code.Type
 import dagger.model.BindingGraph.ComponentNode
+import dagger.model.DependencyRequest
 import org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments
 import org.jetbrains.kotlin.idea.facet.KotlinFacet
 import java.io.File
@@ -116,4 +118,30 @@ fun Module.getCompilerOutputFile(): File? {
 fun VirtualFile.toFileIfExists(): File? {
     val file = File(this.path)
     return if (file.exists()) file else null
+}
+
+fun DependencyRequest.sourceMethod(): String? {
+    val element = requestElement().orNull()
+    return if (element is Symbol.MethodSymbol) {
+        "${element.simpleName}(${element.params.joinToString(",") { it.type.tsym.simpleName }})"
+    } else {
+        element?.toString()
+    }
+}
+
+fun Element.name(): String? {
+    return when (this) {
+        is Symbol.MethodSymbol -> (returnType as? Type.ClassType)?.presentableName()
+        is Symbol.VarSymbol -> (type as? Type.ClassType)?.presentableName()
+        else -> null
+    }
+}
+
+fun Type.ClassType.presentableName(): String {
+    var name = tsym.simpleName.toString()
+    val params = typarams_field
+    if (params.isNotEmpty()) {
+        name += "<${params.joinToString(",") { it.tsym.simpleName }}>"
+    }
+    return name
 }
