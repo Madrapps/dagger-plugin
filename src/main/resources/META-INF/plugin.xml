@@ -11,6 +11,7 @@
     <depends>com.intellij.modules.lang</depends>
     <depends>org.jetbrains.kotlin</depends>
     <depends>com.intellij.modules.java</depends>
+    <depends optional="true" config-file="withAndroid.xml">org.jetbrains.android</depends>
 
     <extensions defaultExtensionNs="com.intellij">
 
@@ -18,6 +19,7 @@
                     icon="/icons/greenrobot.png" id="Dagger"/>
         <projectService serviceInterface="com.madrapps.dagger.services.DaggerService"
                         serviceImplementation="com.madrapps.dagger.services.impl.DaggerServiceImpl"/>
+        <postStartupActivity implementation="com.madrapps.dagger.services.DaggerStartProject"/>
     </extensions>
 
     <actions>

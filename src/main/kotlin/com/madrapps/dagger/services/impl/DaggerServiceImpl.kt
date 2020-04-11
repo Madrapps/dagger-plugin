@@ -7,10 +7,7 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.madrapps.dagger.*
-import com.madrapps.dagger.services.DaggerService
-import com.madrapps.dagger.services.NodeType
-import com.madrapps.dagger.services.service
-import com.madrapps.dagger.services.toNodeType
+import com.madrapps.dagger.services.*
 import com.madrapps.dagger.toolwindow.DaggerNode
 import com.sun.tools.javac.code.Attribute
 import com.sun.tools.javac.code.Symbol
@@ -30,6 +27,12 @@ import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.DefaultTreeModel
 
 class DaggerServiceImpl(private val project: Project) : DaggerService {
+
+    private val processor = Processor()
+
+    override fun process(project: Project) {
+        processor.process(project)
+    }
 
     override val treeModel = DefaultTreeModel(null)
 

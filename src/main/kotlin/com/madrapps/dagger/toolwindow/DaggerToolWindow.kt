@@ -16,6 +16,7 @@ import com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED
 import com.intellij.uiDesigner.core.GridLayoutManager
 import com.intellij.util.EditSourceOnDoubleClickHandler
 import com.madrapps.dagger.actions.RefreshAction
+import com.madrapps.dagger.services.log
 import com.madrapps.dagger.services.service
 import java.awt.BorderLayout
 import java.awt.Insets
@@ -27,7 +28,7 @@ import javax.swing.tree.TreeSelectionModel.SINGLE_TREE_SELECTION
 class DaggerToolWindow : ToolWindowFactory {
 
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
-        println("DaggerToolWindow - Created")
+        project.log("DaggerToolWindow - Created")
         MyPanel(toolWindow, project)
     }
 }

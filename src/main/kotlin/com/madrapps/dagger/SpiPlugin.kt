@@ -1,6 +1,7 @@
 package com.madrapps.dagger
 
 import com.intellij.openapi.project.Project
+import com.madrapps.dagger.services.log
 import com.madrapps.dagger.services.service
 import dagger.model.BindingGraph
 import dagger.spi.BindingGraphPlugin
@@ -13,12 +14,12 @@ class SpiPlugin(private val project: Project) : BindingGraphPlugin {
         diagnosticReporter: DiagnosticReporter
     ) {
         val rootComponentNode = bindingGraph.rootComponentNode()
-        println("------------------------------------------------------------")
-        println("RootComponent - $rootComponentNode")
+        project.log("------------------------------------------------------------")
+        project.log("RootComponent - $rootComponentNode")
         val componentNodes = bindingGraph.componentNodes()
-        println("ComponentNodes - ${componentNodes.size} - $componentNodes")
-        println("Binding Keys - ${bindingGraph.bindings().map { it.key() }}")
-        println("------------------------------------------------------------\n")
+        project.log("ComponentNodes - ${componentNodes.size} - $componentNodes")
+        project.log("Binding Keys - ${bindingGraph.bindings().map { it.key() }}")
+        project.log("------------------------------------------------------------\n")
 
         project.service.addBindings(bindingGraph)
     }

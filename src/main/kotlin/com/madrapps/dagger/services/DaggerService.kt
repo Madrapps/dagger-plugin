@@ -10,6 +10,7 @@ interface DaggerService {
     val treeModel: TreeModel
     fun reset()
     fun addBindings(bindingGraph: BindingGraph)
+    fun process(project: Project)
 
     companion object {
         fun getInstance(project: Project): DaggerService {
@@ -29,5 +30,11 @@ val Project.service: DaggerService
     }
 
 fun Project.log(title: String, content: String) {
-    service.log(title, content)
+    println("$title : $content")
+    if (true) {
+        service.log(title, content)
+    }
+}
+fun Project.log(content: String) {
+    log("Dagger Plugin", content)
 }
