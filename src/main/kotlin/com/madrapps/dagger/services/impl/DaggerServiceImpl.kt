@@ -31,7 +31,9 @@ class DaggerServiceImpl(private val project: Project) : DaggerService {
     private val processor = Processor()
 
     override fun process(project: Project) {
-        processor.process(project)
+        if (!processor.isRunning()) {
+            processor.process(project)
+        }
     }
 
     override val treeModel = DefaultTreeModel(null)

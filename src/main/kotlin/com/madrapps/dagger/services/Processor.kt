@@ -36,9 +36,13 @@ import kotlin.system.measureTimeMillis
 
 class Processor {
 
+    private var running = false
+
+    fun isRunning(): Boolean = running
+
     fun process(project: Project) {
+        running = true
         project.log("Processor - Process Started in Thread ${Thread.currentThread()}")
-        project.service.reset()
 
         val validModules = project.allModules().filter { it.sourceRoots.isNotEmpty() }
         project.log("Processor - modules:${validModules.size}")
@@ -75,8 +79,8 @@ class Processor {
                         project.log("Finish background task - $lo")
                     }
 
-                    override fun onSuccess() {
-
+                    override fun onFinished() {
+                        running = false
                     }
                 }
             val indicator = BackgroundableProcessIndicator(task)
