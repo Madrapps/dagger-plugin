@@ -3,17 +3,23 @@ package com.madrapps.dagger.services.impl
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.notification.Notifications
+import com.intellij.openapi.components.PersistentStateComponent
+import com.intellij.openapi.components.State
+import com.intellij.openapi.components.Storage
+import com.intellij.openapi.components.StoragePathMacros
 import com.intellij.openapi.project.Project
-import com.madrapps.dagger.services.DaggerService
 import com.madrapps.dagger.core.Processor
+import com.madrapps.dagger.services.DaggerService
 import com.madrapps.dagger.toolwindow.DaggerWindowPanel
 import javax.swing.tree.DefaultTreeModel
 
-class DaggerServiceImpl(private val project: Project) : DaggerService {
+@State(name = "com.madrapps.dagger", storages = [Storage(StoragePathMacros.WORKSPACE_FILE)])
+class DaggerServiceImpl(private val project: Project) : DaggerService, PersistentStateComponent<DaggerService.Storage> {
 
     private lateinit var panel: DaggerWindowPanel
 
     private val processor = Processor()
+    private var storage = DaggerService.Storage()
 
     override fun process(project: Project) {
         if (!processor.isRunning()) {
@@ -44,4 +50,15 @@ class DaggerServiceImpl(private val project: Project) : DaggerService {
             )
         )
     }
+
+    override fun getState(): DaggerService.Storage? {
+        return storage
+    }
+
+    override fun loadState(state: DaggerService.Storage) {
+        storage = state
+    }
+
+    override val settings: DaggerService.Storage
+        get() = state ?: DaggerService.Storage()
 }

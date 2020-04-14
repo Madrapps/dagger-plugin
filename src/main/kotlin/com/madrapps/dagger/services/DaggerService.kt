@@ -24,6 +24,12 @@ interface DaggerService {
 
     fun setPanel(panel: DaggerWindowPanel)
     fun getPanel(): DaggerWindowPanel
+
+    val settings: Storage
+
+    class Storage {
+        var isAutoScrollToSource = false
+    }
 }
 
 val Project.service: DaggerService

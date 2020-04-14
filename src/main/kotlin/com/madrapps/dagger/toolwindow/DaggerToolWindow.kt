@@ -38,16 +38,15 @@ class DaggerToolWindow : ToolWindowFactory {
 class MyPanel(toolWindow: ToolWindow, project: Project) : SimpleToolWindowPanel(true, true), DaggerWindowPanel {
 
     override val tree: DaggerTree = DaggerTree(project.service.treeModel)
-    private var shouldAutoScroll = false
     private val autoScrollHandler: AutoScrollToSourceHandler
 
     init {
         autoScrollHandler = object : AutoScrollToSourceHandler() {
 
-            override fun isAutoScrollMode() = shouldAutoScroll
+            override fun isAutoScrollMode() = project.service.settings.isAutoScrollToSource
 
             override fun setAutoScrollMode(state: Boolean) {
-               shouldAutoScroll = state
+                project.service.settings.isAutoScrollToSource = state
             }
         }
 
