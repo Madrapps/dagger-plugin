@@ -8,7 +8,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.treeStructure.SimpleNode
 import com.intellij.ui.treeStructure.SimpleTree
-import com.madrapps.dagger.services.NodeType
+import com.madrapps.dagger.core.NodeType
 import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.TreeModel
 

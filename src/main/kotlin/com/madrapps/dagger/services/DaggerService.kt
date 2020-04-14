@@ -2,6 +2,7 @@ package com.madrapps.dagger.services
 
 import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.project.Project
+import com.madrapps.dagger.toolwindow.DaggerWindowPanel
 import javax.swing.tree.DefaultTreeModel
 
 interface DaggerService {
@@ -20,6 +21,9 @@ interface DaggerService {
     }
 
     fun log(title: String, content: String)
+
+    fun setPanel(panel: DaggerWindowPanel)
+    fun getPanel(): DaggerWindowPanel
 }
 
 val Project.service: DaggerService

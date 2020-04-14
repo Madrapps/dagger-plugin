@@ -1,8 +1,8 @@
-package com.madrapps.dagger.services
+package com.madrapps.dagger.core
 
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.util.IconLoader
-import com.madrapps.dagger.services.NodeType.*
+import com.madrapps.dagger.core.NodeType.*
 import dagger.model.BindingGraph
 import dagger.model.BindingKind
 import javax.swing.Icon

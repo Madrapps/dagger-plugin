@@ -3,10 +3,10 @@ package com.madrapps.dagger
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
-import com.madrapps.dagger.services.NodeType
+import com.madrapps.dagger.core.NodeType
 import com.madrapps.dagger.services.log
 import com.madrapps.dagger.services.service
-import com.madrapps.dagger.services.toNodeType
+import com.madrapps.dagger.core.toNodeType
 import com.madrapps.dagger.toolwindow.DaggerNode
 import com.sun.tools.javac.code.Attribute
 import com.sun.tools.javac.code.Symbol

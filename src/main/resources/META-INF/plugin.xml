@@ -26,7 +26,10 @@
         <action id="com.madrapps.dagger.actions.RefreshAction"
                 class="com.madrapps.dagger.actions.RefreshAction"
                 icon="AllIcons.Actions.Refresh"
-                text="Refresh">
-        </action>
+                text="Refresh" />
+        <action id="com.madrapps.dagger.actions.CollapseAllAction"
+                class="com.madrapps.dagger.actions.CollapseAllAction"
+                icon="AllIcons.Actions.Collapseall"
+                text="Collapse All"/>
     </actions>
 </idea-plugin>

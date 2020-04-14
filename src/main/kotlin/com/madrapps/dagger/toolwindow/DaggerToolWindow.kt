@@ -15,6 +15,7 @@ import com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH
 import com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED
 import com.intellij.uiDesigner.core.GridLayoutManager
 import com.intellij.util.EditSourceOnDoubleClickHandler
+import com.madrapps.dagger.actions.CollapseAllAction
 import com.madrapps.dagger.actions.RefreshAction
 import com.madrapps.dagger.services.log
 import com.madrapps.dagger.services.service
@@ -33,15 +34,16 @@ class DaggerToolWindow : ToolWindowFactory {
     }
 }
 
-class MyPanel(toolWindow: ToolWindow, private val project: Project) : SimpleToolWindowPanel(true, true) {
+class MyPanel(toolWindow: ToolWindow, project: Project) : SimpleToolWindowPanel(true, true), DaggerWindowPanel {
 
-    private lateinit var tree: DaggerTree
+    override val tree: DaggerTree = DaggerTree(project.service.treeModel)
 
     init {
         val content = ContentFactory.SERVICE.getInstance()
             .createContent(this, "", false)
         toolWindow.contentManager.addContent(content)
         setContent(getContentPanel())
+        project.service.setPanel(this)
     }
 
     private fun getContentPanel(): JPanel {
@@ -58,7 +60,6 @@ class MyPanel(toolWindow: ToolWindow, private val project: Project) : SimpleTool
         val toolbar = JPanel(BorderLayout())
         initToolbar(toolbar)
 
-        tree = DaggerTree(project.service.treeModel)
         tree.isRootVisible = false
         tree.toggleClickCount = 3
         tree.selectionModel.selectionMode = SINGLE_TREE_SELECTION
@@ -84,13 +85,21 @@ class MyPanel(toolWindow: ToolWindow, private val project: Project) : SimpleTool
     private fun initToolbar(toolbar: JPanel) {
         val manager = ActionManager.getInstance()
         val refreshAction = manager.getAction(RefreshAction.ID)
+        val collapseAll = manager.getAction(CollapseAllAction.ID)
 
-        val defaultActionGroup = DefaultActionGroup()
-        defaultActionGroup.add(refreshAction)
-        defaultActionGroup.addSeparator()
+        val defaultActionGroup = DefaultActionGroup().apply {
+            add(refreshAction)
+            addSeparator()
+            add(collapseAll)
+        }
 
         val actionToolbar = manager.createActionToolbar(ActionPlaces.TOOLWINDOW_TITLE, defaultActionGroup, true)
         actionToolbar.setTargetComponent(toolbar)
         toolbar.add(actionToolbar.component)
     }
+}
+
+interface DaggerWindowPanel {
+
+    val tree: DaggerTree
 }

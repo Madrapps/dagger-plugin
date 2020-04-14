@@ -1,4 +1,4 @@
-package com.madrapps.dagger.services
+package com.madrapps.dagger.core
 
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.progress.ProgressIndicator
@@ -17,6 +17,7 @@ import com.intellij.util.PathUtil
 import com.madrapps.dagger.SpiPlugin
 import com.madrapps.dagger.getCompilerOutputFile
 import com.madrapps.dagger.getKotlinOutputDir
+import com.madrapps.dagger.services.log
 import com.sun.tools.javac.api.JavacTool
 import dagger.android.processor.AndroidProcessor
 import dagger.internal.DaggerCollections
