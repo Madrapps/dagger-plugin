@@ -7,6 +7,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
+import com.intellij.ui.AutoScrollToSourceHandler
 import com.intellij.ui.components.JBPanel
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.content.ContentFactory
@@ -37,10 +38,20 @@ class DaggerToolWindow : ToolWindowFactory {
 class MyPanel(toolWindow: ToolWindow, project: Project) : SimpleToolWindowPanel(true, true), DaggerWindowPanel {
 
     override val tree: DaggerTree = DaggerTree(project.service.treeModel)
+    private var shouldAutoScroll = false
+    private val autoScrollHandler: AutoScrollToSourceHandler
 
     init {
-        val content = ContentFactory.SERVICE.getInstance()
-            .createContent(this, "", false)
+        autoScrollHandler = object : AutoScrollToSourceHandler() {
+
+            override fun isAutoScrollMode() = shouldAutoScroll
+
+            override fun setAutoScrollMode(state: Boolean) {
+               shouldAutoScroll = state
+            }
+        }
+
+        val content = ContentFactory.SERVICE.getInstance().createContent(this, "", false)
         toolWindow.contentManager.addContent(content)
         setContent(getContentPanel())
         project.service.setPanel(this)
@@ -66,6 +77,7 @@ class MyPanel(toolWindow: ToolWindow, project: Project) : SimpleToolWindowPanel(
         EditSourceOnDoubleClickHandler.install(tree) {
             tree.expandPath(tree.selectionPath)
         }
+        autoScrollHandler.install(tree)
 
         val jbScrollPane = JBScrollPane(tree, VERTICAL_SCROLLBAR_AS_NEEDED, HORIZONTAL_SCROLLBAR_AS_NEEDED)
 
@@ -86,10 +98,12 @@ class MyPanel(toolWindow: ToolWindow, project: Project) : SimpleToolWindowPanel(
         val manager = ActionManager.getInstance()
         val refreshAction = manager.getAction(RefreshAction.ID)
         val collapseAll = manager.getAction(CollapseAllAction.ID)
+        val autoScroll = autoScrollHandler.createToggleAction()
 
         val defaultActionGroup = DefaultActionGroup().apply {
             add(refreshAction)
             addSeparator()
+            add(autoScroll)
             add(collapseAll)
         }
 
