@@ -9,6 +9,9 @@ import com.intellij.ui.SimpleTextAttributes
 import com.intellij.ui.treeStructure.SimpleNode
 import com.intellij.ui.treeStructure.SimpleTree
 import com.madrapps.dagger.core.NodeType
+import com.madrapps.dagger.services.log
+import com.madrapps.dagger.services.service
+import org.jetbrains.uast.toUElement
 import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.TreeModel
 
@@ -53,6 +56,11 @@ private class SimplerNode(
     val key: String,
     private val nodeType: NodeType
 ) : SimpleNode(project) {
+
+    init {
+        project.service.addPsiElement(element.toUElement())
+        project.log("ELEMENT", element.toString())
+    }
 
     override fun getChildren(): Array<SimpleNode> = NO_CHILDREN
     override fun getName(): String = content

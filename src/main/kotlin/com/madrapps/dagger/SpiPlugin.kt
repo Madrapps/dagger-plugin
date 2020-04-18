@@ -172,6 +172,7 @@ class SpiPlugin(private val project: Project) : BindingGraphPlugin {
         get() {
             var root = project.service.treeModel.root
             if (!firstNodeCreated) {
+                project.service.reset()
                 firstNodeCreated = true
                 root = DefaultMutableTreeNode("")
                 project.service.treeModel.setRoot(root)
