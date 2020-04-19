@@ -3,11 +3,12 @@ package com.madrapps.dagger
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
+import com.madrapps.dagger.core.Node
 import com.madrapps.dagger.core.NodeType
+import com.madrapps.dagger.core.createChildTree
+import com.madrapps.dagger.core.toNodeType
 import com.madrapps.dagger.services.log
 import com.madrapps.dagger.services.service
-import com.madrapps.dagger.core.toNodeType
-import com.madrapps.dagger.toolwindow.DaggerNode
 import com.sun.tools.javac.code.Attribute
 import com.sun.tools.javac.code.Symbol
 import com.sun.tools.javac.code.Type
@@ -26,6 +27,13 @@ import javax.inject.Qualifier
 import javax.lang.model.element.Element
 import javax.swing.tree.DefaultMutableTreeNode
 
+private val keys = listOf<String>(
+    StringKey::class.java.name,
+    IntKey::class.java.name,
+    LongKey::class.java.name,
+    ClassKey::class.java.name
+)
+
 class SpiPlugin(private val project: Project) : BindingGraphPlugin {
 
     private var firstNodeCreated = false
@@ -42,22 +50,20 @@ class SpiPlugin(private val project: Project) : BindingGraphPlugin {
         project.log("------------------------------------------------------------\n")
 
         addBindings(bindingGraph)
+        project.log("Tree constructed")
     }
 
 
     private fun addBindings(bindingGraph: BindingGraph) {
-
         ApplicationManager.getApplication().runReadAction {
-            val rootComponentNode = bindingGraph.rootComponentNode()
-            val componentNodes = bindingGraph.componentNodes()
-
-            componentNodes.forEach {
+            rootNode
+            bindingGraph.componentNodes().forEach {
                 val componentNode =
-                    DaggerNode(project, it.name, it.toPsiClass(project)!!, null, "", it.toNodeType())
+                    createNode(it.name, it.toPsiClass(project)!!, null, it.toString(), it.toNodeType())
                 it.entryPoints().forEach {
                     addNodes(it, bindingGraph, componentNode, null, true)
                 }
-                rootNode.add(componentNode)
+                rootNode.add(componentNode.createChildTree(project))
                 project.service.treeModel.reload()
             }
         }
@@ -66,40 +72,39 @@ class SpiPlugin(private val project: Project) : BindingGraphPlugin {
     private fun addNodes(
         dr: DependencyRequest,
         bindingGraph: BindingGraph,
-        parentNode: DaggerNode,
+        parentNode: Node,
         parentBinding: Binding?,
         isEntryPoint: Boolean
     ) {
-        var currentNode = parentNode
         val key = dr.key()
+        var currentNode = parentNode
         val binding = bindingGraph.bindings(key).first()
         if (binding.kind().isMultibinding) {
             val classType = dr.key().type() as? Type.ClassType
             if (classType != null) {
                 val name = classType.presentableName()
                 val psiElement = dr.requestElement().orNull()?.toPsiElement(project)!!
-                currentNode = DaggerNode(
-                    project,
+                currentNode = createNode(
                     name,
                     psiElement,
                     if (isEntryPoint) dr.sourceMethod() else null,
                     key.toString(),
                     binding.kind().toNodeType()
                 )
-                parentNode.add(currentNode)
+                parentNode.addChild(currentNode)
             }
         } else {
             binding.bindingElement().ifPresent { element ->
-                val daggerNode = dr.createNode(
+                val tempNode = dr.createNode(
                     element,
                     isEntryPoint,
                     parentBinding,
                     key.toString(),
                     binding.kind().toNodeType()
                 )
-                if (daggerNode != null) {
-                    currentNode = daggerNode
-                    parentNode.add(currentNode)
+                if (tempNode != null) {
+                    currentNode = tempNode
+                    parentNode.addChild(currentNode)
                 }
             }
         }
@@ -116,7 +121,7 @@ class SpiPlugin(private val project: Project) : BindingGraphPlugin {
         parentBinding: Binding?,
         key: String,
         nodeType: NodeType
-    ): DaggerNode? {
+    ): Node? {
         val name: String
         val psiElement: PsiElement
         when (element) {
@@ -158,8 +163,7 @@ class SpiPlugin(private val project: Project) : BindingGraphPlugin {
             else -> return null
         }
         val sourceMethod = if (isEntryPoint) sourceMethod() else null
-        return DaggerNode(
-            project,
+        return createNode(
             name,
             psiElement,
             sourceMethod,
@@ -180,10 +184,15 @@ class SpiPlugin(private val project: Project) : BindingGraphPlugin {
             return root as DefaultMutableTreeNode
         }
 
-    private val keys = listOf<String>(
-        StringKey::class.java.name,
-        IntKey::class.java.name,
-        LongKey::class.java.name,
-        ClassKey::class.java.name
-    )
+    private fun createNode(
+        name: String,
+        element: PsiElement,
+        sourceMethod: String?,
+        key: String,
+        nodeType: NodeType
+    ): Node {
+        val node = Node(key, name, sourceMethod, element, nodeType)
+        project.service.addNode(node)
+        return node
+    }
 }

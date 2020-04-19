@@ -8,6 +8,7 @@ import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.openapi.components.StoragePathMacros
 import com.intellij.openapi.project.Project
+import com.madrapps.dagger.core.Node
 import com.madrapps.dagger.core.Processor
 import com.madrapps.dagger.services.DaggerService
 import com.madrapps.dagger.toolwindow.DaggerWindowPanel
@@ -22,6 +23,8 @@ class DaggerServiceImpl(private val project: Project) : DaggerService, Persisten
 
     private val processor = Processor()
     private var storage = DaggerService.Storage()
+
+    private val _nodes = mutableSetOf<Node>()
 
     override fun process(project: Project) {
         if (!processor.isRunning()) {
@@ -42,13 +45,23 @@ class DaggerServiceImpl(private val project: Project) : DaggerService, Persisten
     override fun getPanel(): DaggerWindowPanel = panel
 
     override fun reset() {
+        _nodes.clear()
         treeModel.setRoot(null)
         treeModel.reload()
     }
 
+    override fun addNode(node: Node) {
+        _nodes.add(node)
+    }
+
+    override fun getNode(key: String) = nodes.find { it.key == key }
+
     override fun addPsiElement(element: UElement?) {
         if (element != null) elements.add(element)
     }
+
+    override val nodes: Set<Node>
+        get() = _nodes
 
     override fun log(title: String, content: String) {
         Notifications.Bus.notify(

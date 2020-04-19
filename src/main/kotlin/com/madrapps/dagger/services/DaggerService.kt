@@ -2,18 +2,12 @@ package com.madrapps.dagger.services
 
 import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.project.Project
+import com.madrapps.dagger.core.Node
 import com.madrapps.dagger.toolwindow.DaggerWindowPanel
 import org.jetbrains.uast.UElement
 import javax.swing.tree.DefaultTreeModel
 
 interface DaggerService {
-
-    val treeModel: DefaultTreeModel
-    fun reset()
-    fun process(project: Project)
-    fun getPsiElements(): Set<UElement>
-    fun addPsiElement(element: UElement?)
-
     companion object {
         fun getInstance(project: Project): DaggerService {
             return ServiceManager.getService(
@@ -22,6 +16,16 @@ interface DaggerService {
             )
         }
     }
+
+    val treeModel: DefaultTreeModel
+    fun reset()
+    fun process(project: Project)
+    fun getPsiElements(): Set<UElement>
+    fun addPsiElement(element: UElement?)
+
+    val nodes: Set<Node>
+    fun addNode(node: Node)
+    fun getNode(key: String): Node?
 
     fun log(title: String, content: String)
 

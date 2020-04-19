@@ -1,5 +1,6 @@
 package com.madrapps.dagger.services
 
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.StartupActivity
 import com.intellij.task.ProjectTaskContext
@@ -19,8 +20,14 @@ class DaggerStartProject : StartupActivity {
 
             override fun finished(context: ProjectTaskContext, executionResult: ProjectTaskResult) {
                 super.finished(context, executionResult)
-                project.log("TASK F - $executionResult")
-                project.service.process(project)
+                Thread{
+                    project.log("TASK F - $executionResult")
+                    Thread.sleep(5000)
+                    ApplicationManager.getApplication().runReadAction {
+                        project.log("TASK F", "Build Successful")
+                        project.service.process(project)
+                    }
+                }.start()
             }
         })
     }
