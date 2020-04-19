@@ -57,13 +57,14 @@ class SpiPlugin(private val project: Project) : BindingGraphPlugin {
     private fun addBindings(bindingGraph: BindingGraph) {
         ApplicationManager.getApplication().runReadAction {
             rootNode
+            val componentKey = bindingGraph.rootComponentNode().toString()
             bindingGraph.componentNodes().forEach {
                 val componentNode =
-                    createNode(it.name, it.toPsiClass(project)!!, null, it.toString(), it.toNodeType())
+                    createNode(it.name, it.toPsiClass(project)!!, null, it.toString(), it.toNodeType(), componentKey)
                 it.entryPoints().forEach {
-                    addNodes(it, bindingGraph, componentNode, null, true)
+                    addNodes(it, bindingGraph, componentNode, null, true, componentKey)
                 }
-                rootNode.add(componentNode.createChildTree(project))
+                rootNode.add(componentNode.createChildTree(project, componentKey))
                 project.service.treeModel.reload()
             }
         }
@@ -74,7 +75,8 @@ class SpiPlugin(private val project: Project) : BindingGraphPlugin {
         bindingGraph: BindingGraph,
         parentNode: Node,
         parentBinding: Binding?,
-        isEntryPoint: Boolean
+        isEntryPoint: Boolean,
+        componentKey: String
     ) {
         val key = dr.key()
         var currentNode = parentNode
@@ -89,7 +91,8 @@ class SpiPlugin(private val project: Project) : BindingGraphPlugin {
                     psiElement,
                     if (isEntryPoint) dr.sourceMethod() else null,
                     key.toString(),
-                    binding.kind().toNodeType()
+                    binding.kind().toNodeType(),
+                    componentKey
                 )
                 parentNode.addChild(currentNode)
             }
@@ -100,7 +103,8 @@ class SpiPlugin(private val project: Project) : BindingGraphPlugin {
                     isEntryPoint,
                     parentBinding,
                     key.toString(),
-                    binding.kind().toNodeType()
+                    binding.kind().toNodeType(),
+                    componentKey
                 )
                 if (tempNode != null) {
                     currentNode = tempNode
@@ -110,7 +114,7 @@ class SpiPlugin(private val project: Project) : BindingGraphPlugin {
         }
         if (!parentNode.isVisitedAlready(key.toString())) { // to avoid circular dependencies causing stackOverFlow
             binding.dependencies().filterNot { it.key().toString().startsWith("dagger.android.") }.forEach {
-                addNodes(it, bindingGraph, currentNode, binding, false)
+                addNodes(it, bindingGraph, currentNode, binding, false, componentKey)
             }
         }
     }
@@ -120,7 +124,8 @@ class SpiPlugin(private val project: Project) : BindingGraphPlugin {
         isEntryPoint: Boolean,
         parentBinding: Binding?,
         key: String,
-        nodeType: NodeType
+        nodeType: NodeType,
+        componentKey: String
     ): Node? {
         val name: String
         val psiElement: PsiElement
@@ -168,7 +173,8 @@ class SpiPlugin(private val project: Project) : BindingGraphPlugin {
             psiElement,
             sourceMethod,
             key,
-            nodeType
+            nodeType,
+            componentKey
         )
     }
 
@@ -189,9 +195,10 @@ class SpiPlugin(private val project: Project) : BindingGraphPlugin {
         element: PsiElement,
         sourceMethod: String?,
         key: String,
-        nodeType: NodeType
+        nodeType: NodeType,
+        componentKey: String
     ): Node {
-        val node = Node(key, name, sourceMethod, element, nodeType)
+        val node = Node(key, name, sourceMethod, element, nodeType, componentKey)
         project.service.addNode(node)
         return node
     }

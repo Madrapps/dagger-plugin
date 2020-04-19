@@ -45,6 +45,8 @@ class DaggerServiceImpl(private val project: Project) : DaggerService, Persisten
     override fun getPanel(): DaggerWindowPanel = panel
 
     override fun reset() {
+        val groupBy = _nodes.groupBy { it.key }
+        val groupBy1 = _nodes.groupBy { it.content }
         _nodes.clear()
         treeModel.setRoot(null)
         treeModel.reload()

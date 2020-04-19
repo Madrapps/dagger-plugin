@@ -9,7 +9,8 @@ data class Node(
     val content: String,
     val sourceMethod: String?,
     val element: PsiElement,
-    val nodeType: NodeType
+    val nodeType: NodeType,
+    val componentKey: String
 ) {
 
     private val _parents = mutableSetOf<Node>()
@@ -33,16 +34,33 @@ data class Node(
         }
         return false
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        other as Node
+        if (key != other.key) return false
+        if (element != other.element) return false
+        if (componentKey != other.componentKey) return false
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = key.hashCode()
+        result = 31 * result + element.hashCode()
+        result = 31 * result + componentKey.hashCode()
+        return result
+    }
 }
 
-fun Node.toDaggerNode(project: Project): DaggerNode {
+fun Node.toDaggerNode(project: Project, componentKey: String): DaggerNode {
     return DaggerNode(project, content, element, sourceMethod, key, nodeType)
 }
 
-fun Node.createChildTree(project: Project): DaggerNode {
-    val rootNode = this.toDaggerNode(project)
+fun Node.createChildTree(project: Project, componentKey: String): DaggerNode {
+    val rootNode = this.toDaggerNode(project, componentKey)
     this.children.forEach {
-        val childRootNode = it.createChildTree(project)
+        val childRootNode = it.createChildTree(project, componentKey)
         rootNode.add(childRootNode)
     }
     return rootNode
