@@ -16,9 +16,7 @@ import com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH
 import com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED
 import com.intellij.uiDesigner.core.GridLayoutManager
 import com.intellij.util.EditSourceOnDoubleClickHandler
-import com.madrapps.dagger.actions.CollapseAllAction
-import com.madrapps.dagger.actions.ExpandAllAction
-import com.madrapps.dagger.actions.RefreshAction
+import com.madrapps.dagger.actions.*
 import com.madrapps.dagger.services.log
 import com.madrapps.dagger.services.service
 import java.awt.BorderLayout
@@ -97,12 +95,19 @@ class MyPanel(toolWindow: ToolWindow, project: Project) : SimpleToolWindowPanel(
     private fun initToolbar(toolbar: JPanel) {
         val manager = ActionManager.getInstance()
         val refreshAction = manager.getAction(RefreshAction.ID)
+        val fullDaggerGraphAction = manager.getAction(FullDaggerGraphAction.ID)
+        val viewParentsAction = manager.getAction(ViewParentsAction.ID)
+        val viewChildrenAction = manager.getAction(ViewChildrenAction.ID)
+        val autoScroll = autoScrollHandler.createToggleAction()
         val expandAll = manager.getAction(ExpandAllAction.ID)
         val collapseAll = manager.getAction(CollapseAllAction.ID)
-        val autoScroll = autoScrollHandler.createToggleAction()
 
         val defaultActionGroup = DefaultActionGroup().apply {
             add(refreshAction)
+            addSeparator()
+            add(fullDaggerGraphAction)
+            add(viewParentsAction)
+            add(viewChildrenAction)
             addSeparator()
             add(autoScroll)
             add(expandAll)
