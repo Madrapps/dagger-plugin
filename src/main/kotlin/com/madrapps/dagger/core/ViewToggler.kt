@@ -8,13 +8,13 @@ import kotlin.String as ID
 class ViewToggler {
 
     private val states: Map<ID, ViewState> = mapOf(
-        FullDaggerGraphAction.ID to ViewState(isSelected = false, isEnabled = false),
-        ViewChildrenAction.ID to ViewState(isSelected = false, isEnabled = false),
-        ViewParentsAction.ID to ViewState(isSelected = false, isEnabled = false)
+        FullDaggerGraphAction.ID to ViewState(isSelected = false),
+        ViewChildrenAction.ID to ViewState(isSelected = false),
+        ViewParentsAction.ID to ViewState(isSelected = false)
     )
 
-    fun state(id: ID): ViewState {
-        return states[id] ?: error("No action with id=$id")
+    fun isSelected(id: ID): Boolean {
+        return states[id]?.isSelected ?: error("No action with id=$id")
     }
 
     fun select(id: ID) {
@@ -22,5 +22,10 @@ class ViewToggler {
         states[id]?.isSelected = true
     }
 
-    data class ViewState(var isSelected: Boolean, var isEnabled: Boolean)
+    fun reset() {
+        states.forEach { (_, u) -> u.isSelected = false }
+        states[FullDaggerGraphAction.ID]?.isSelected = true
+    }
+
+    data class ViewState(var isSelected: Boolean)
 }

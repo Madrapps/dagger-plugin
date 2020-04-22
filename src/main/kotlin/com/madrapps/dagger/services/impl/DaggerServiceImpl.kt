@@ -26,7 +26,6 @@ class DaggerServiceImpl(private val project: Project) : DaggerService, Persisten
     private var storage = DaggerService.Storage()
 
     private val _nodes = mutableSetOf<Node>()
-    private val viewToggler = ViewToggler()
 
     override fun process(project: Project) {
         if (!processor.isRunning()) {
@@ -40,6 +39,8 @@ class DaggerServiceImpl(private val project: Project) : DaggerService, Persisten
 
     override val treeModel = DefaultTreeModel(null)
 
+    private val viewToggler = ViewToggler()
+
     override fun setPanel(panel: DaggerWindowPanel) {
         this.panel = panel
     }
@@ -52,6 +53,7 @@ class DaggerServiceImpl(private val project: Project) : DaggerService, Persisten
         _nodes.clear()
         treeModel.setRoot(null)
         treeModel.reload()
+        viewToggler.reset()
     }
 
     override fun viewToggler(): ViewToggler {

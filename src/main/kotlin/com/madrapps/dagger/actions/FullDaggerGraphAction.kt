@@ -10,13 +10,7 @@ class FullDaggerGraphAction : AbstractViewAction() {
         const val ID = "com.madrapps.dagger.actions.FullDaggerGraphAction"
     }
 
-    override fun isSelected(e: AnActionEvent): Boolean {
-        val project = e.project
-        if (project != null) {
-           return super.isSelected(e) && project.service.viewToggler().state(ID).isSelected
-        }
-        return false
-    }
+    override val id = ID
 
     override fun setSelected(e: AnActionEvent, state: Boolean) {
         val project = e.project

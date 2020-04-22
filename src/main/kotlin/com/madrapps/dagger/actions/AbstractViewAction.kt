@@ -19,9 +19,10 @@ abstract class AbstractViewAction : ToggleAction() {
     override fun isSelected(e: AnActionEvent): Boolean {
         val project = e.project
         if (project != null) {
-            val treeModel = project.service.treeModel
-            return treeModel.root != null
+            return e.presentation.isEnabled && project.service.viewToggler().isSelected(id)
         }
-        return true
+        return false
     }
+
+    abstract val id: String
 }

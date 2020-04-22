@@ -10,12 +10,15 @@ class ViewChildrenAction : AbstractViewAction() {
         const val ID = "com.madrapps.dagger.actions.ViewChildrenAction"
     }
 
-    override fun isSelected(e: AnActionEvent): Boolean {
+    override val id = ID
+
+    override fun update(e: AnActionEvent) {
+        super.update(e)
         val project = e.project
         if (project != null) {
-            return super.isSelected(e) && project.service.viewToggler().state(ID).isSelected
+            val selectedNode = project.service.getPanel().tree.selectedNode
+            e.presentation.isEnabled = e.presentation.isEnabled && selectedNode != null
         }
-        return false
     }
 
     override fun setSelected(e: AnActionEvent, state: Boolean) {
