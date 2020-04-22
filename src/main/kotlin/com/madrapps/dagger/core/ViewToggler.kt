@@ -18,12 +18,16 @@ class ViewToggler {
     }
 
     fun select(id: ID) {
-        states.forEach { (_, u) -> u.isSelected = false }
+        clearSelection()
         states[id]?.isSelected = true
     }
 
-    fun reset() {
+    fun clearSelection() {
         states.forEach { (_, u) -> u.isSelected = false }
+    }
+
+    fun reset() {
+        clearSelection()
         states[FullDaggerGraphAction.ID]?.isSelected = true
     }
 

@@ -32,8 +32,9 @@ class DaggerNode(
     element: PsiElement,
     sourceMethod: String?,
     key: String,
-    nodeType: NodeType
-) : DefaultMutableTreeNode(SimplerNode(project, element, name, sourceMethod, key, nodeType)) {
+    nodeType: NodeType,
+    componentKey: String
+) : DefaultMutableTreeNode(SimplerNode(project, element, name, sourceMethod, key, nodeType, componentKey)) {
 
     fun isVisitedAlready(key: String): Boolean {
         var parent = this as DaggerNode?
@@ -48,13 +49,14 @@ class DaggerNode(
     }
 }
 
-private class SimplerNode(
+class SimplerNode(
     project: Project,
     val element: PsiElement,
     private val content: String,
     private val sourceMethod: String?,
     val key: String,
-    private val nodeType: NodeType
+    private val nodeType: NodeType,
+    val componentKey: String
 ) : SimpleNode(project) {
 
     init {

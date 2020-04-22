@@ -64,7 +64,7 @@ class SpiPlugin(private val project: Project) : BindingGraphPlugin {
                 it.entryPoints().forEach {
                     addNodes(it, bindingGraph, componentNode, null, true, componentKey)
                 }
-                rootNode.add(componentNode.createChildTree(project, componentKey))
+                rootNode.add(componentNode.createChildTree(project))
                 project.service.treeModel.reload()
             }
         }

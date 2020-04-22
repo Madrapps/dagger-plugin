@@ -53,14 +53,14 @@ data class Node(
     }
 }
 
-fun Node.toDaggerNode(project: Project, componentKey: String): DaggerNode {
-    return DaggerNode(project, content, element, sourceMethod, key, nodeType)
+fun Node.toDaggerNode(project: Project): DaggerNode {
+    return DaggerNode(project, content, element, sourceMethod, key, nodeType, componentKey)
 }
 
-fun Node.createChildTree(project: Project, componentKey: String): DaggerNode {
-    val rootNode = this.toDaggerNode(project, componentKey)
+fun Node.createChildTree(project: Project): DaggerNode {
+    val rootNode = this.toDaggerNode(project)
     this.children.forEach {
-        val childRootNode = it.createChildTree(project, componentKey)
+        val childRootNode = it.createChildTree(project)
         rootNode.add(childRootNode)
     }
     return rootNode

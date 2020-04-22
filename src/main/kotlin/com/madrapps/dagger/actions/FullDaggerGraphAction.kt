@@ -25,7 +25,7 @@ class FullDaggerGraphAction : AbstractViewAction() {
                 val root = DefaultMutableTreeNode("")
                 treeModel.setRoot(root)
                 project.service.nodes.filter { it.parents.isEmpty() }.forEach {
-                    root.add(it.createChildTree(project, ""))
+                    root.add(it.createChildTree(project))
                     treeModel.reload()
                 }
             }
