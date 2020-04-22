@@ -3,6 +3,7 @@ package com.madrapps.dagger.services
 import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.project.Project
 import com.madrapps.dagger.core.Node
+import com.madrapps.dagger.core.ViewToggler
 import com.madrapps.dagger.toolwindow.DaggerWindowPanel
 import org.jetbrains.uast.UElement
 import javax.swing.tree.DefaultTreeModel
@@ -22,6 +23,8 @@ interface DaggerService {
     fun process(project: Project)
     fun getPsiElements(): Set<UElement>
     fun addPsiElement(element: UElement?)
+    fun viewToggler(): ViewToggler
+
 
     val nodes: Set<Node>
     fun addNode(node: Node)

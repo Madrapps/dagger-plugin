@@ -10,6 +10,7 @@ import com.intellij.openapi.components.StoragePathMacros
 import com.intellij.openapi.project.Project
 import com.madrapps.dagger.core.Node
 import com.madrapps.dagger.core.Processor
+import com.madrapps.dagger.core.ViewToggler
 import com.madrapps.dagger.services.DaggerService
 import com.madrapps.dagger.toolwindow.DaggerWindowPanel
 import org.jetbrains.uast.UElement
@@ -25,6 +26,7 @@ class DaggerServiceImpl(private val project: Project) : DaggerService, Persisten
     private var storage = DaggerService.Storage()
 
     private val _nodes = mutableSetOf<Node>()
+    private val viewToggler = ViewToggler()
 
     override fun process(project: Project) {
         if (!processor.isRunning()) {
@@ -50,6 +52,10 @@ class DaggerServiceImpl(private val project: Project) : DaggerService, Persisten
         _nodes.clear()
         treeModel.setRoot(null)
         treeModel.reload()
+    }
+
+    override fun viewToggler(): ViewToggler {
+        return viewToggler
     }
 
     override fun addNode(node: Node) {
