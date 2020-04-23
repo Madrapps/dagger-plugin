@@ -199,7 +199,12 @@ class SpiPlugin(private val project: Project) : BindingGraphPlugin {
         componentKey: String
     ): Node {
         val node = Node(key, name, sourceMethod, element, nodeType, componentKey)
-        project.service.addNode(node)
-        return node
+        val oldNode = project.service.nodes.find { it == node }
+        return if (oldNode != null) {
+            oldNode
+        } else {
+            project.service.addNode(node)
+            node
+        }
     }
 }

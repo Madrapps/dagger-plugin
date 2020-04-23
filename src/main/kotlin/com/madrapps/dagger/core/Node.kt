@@ -57,11 +57,14 @@ fun Node.toDaggerNode(project: Project): DaggerNode {
     return DaggerNode(project, content, element, sourceMethod, key, nodeType, componentKey)
 }
 
-fun Node.createChildTree(project: Project): DaggerNode {
+fun Node.createChildTree(project: Project, roots: MutableSet<Node> = mutableSetOf()): DaggerNode {
     val rootNode = this.toDaggerNode(project)
-    this.children.forEach {
-        val childRootNode = it.createChildTree(project)
-        rootNode.add(childRootNode)
+    if (!roots.contains(this)) {
+        this.children.forEach {
+            roots += this
+            val childRootNode = it.createChildTree(project, roots)
+            rootNode.add(childRootNode)
+        }
     }
     return rootNode
 }
