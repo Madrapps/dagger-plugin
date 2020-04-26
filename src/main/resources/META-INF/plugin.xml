@@ -16,7 +16,7 @@
     <extensions defaultExtensionNs="com.intellij">
 
         <toolWindow anchor="right" factoryClass="com.madrapps.dagger.toolwindow.DaggerToolWindow"
-                    icon="/icons/greenrobot.png" id="Dagger"/>
+                    icon="/icons/icon.svg" id="Dagger"/>
         <projectService serviceInterface="com.madrapps.dagger.services.DaggerService"
                         serviceImplementation="com.madrapps.dagger.services.impl.DaggerServiceImpl"/>
         <postStartupActivity implementation="com.madrapps.dagger.services.DaggerStartProject"/>
