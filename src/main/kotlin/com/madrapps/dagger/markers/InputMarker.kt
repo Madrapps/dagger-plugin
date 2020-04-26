@@ -8,15 +8,13 @@ import com.intellij.openapi.editor.markup.GutterIconRenderer
 import com.intellij.psi.PsiElement
 import com.intellij.util.concurrency.AppExecutorUtil
 import com.madrapps.dagger.services.log
-import com.madrapps.dagger.services.service
-import org.jetbrains.uast.toUElement
 
 class InputMarker : LineMarkerProvider {
 
     override fun getLineMarkerInfo(element: PsiElement): LineMarkerInfo<*>? {
-        if (element.project.service.getPsiElements().contains(element.toUElement())) {
-            return SubscribeLineMarkerInfo(element)
-        }
+//        if (element.project.service.getPsiElements().contains(element.toUElement())) {
+//            return SubscribeLineMarkerInfo(element)
+//        }
         return null
     }
 
