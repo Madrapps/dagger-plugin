@@ -53,15 +53,24 @@ fun Symbol.VarSymbol.toPsiParameter(project: Project): PsiParameter? {
     val method = getMethod()
     val psiMethod = method.toPsiMethod(project)
     if (psiMethod != null) {
-        val parameters = psiMethod.parameterList.parameters.filter { it.type.canonicalText == type.toString() }
-        return if (parameters.size > 1) {
-            // This may not always work since we work with .class and not source files, the names may be obfuscated like 'arg1' or so.
-            parameters.find { it.name == simpleName.toString() }
+        val parameters = psiMethod.parameterList.parameters
+        val param = simpleName.toString()
+        val argOrder = getArgOrder(param)
+        return if (argOrder != null && argOrder in parameters.indices) {
+            parameters[argOrder]
         } else {
-            parameters.firstOrNull()
+            parameters.find { it.name == param }
         }
     }
     return null
+}
+
+/**
+ * In some cases (since we work with .class files), we don't get the argument's name and instead get `arg0` or `arg1`.
+ * In this case, this method will return the position of the argument in the method.
+ */
+private fun getArgOrder(param: String): Int? {
+    return param.split("arg").getOrNull(1)?.toIntOrNull()
 }
 
 fun Symbol.ClassSymbol.toPsiClass(project: Project): PsiClass? {
