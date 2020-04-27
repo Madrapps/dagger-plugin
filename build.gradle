@@ -5,7 +5,7 @@ plugins {
 }
 
 group 'com.madrapps'
-version '0.1.2019.2'
+version '0.1.2019.1'
 
 sourceCompatibility = 1.8
 
@@ -29,8 +29,8 @@ dependencies {
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    version '2019.2'
-    plugins 'Kotlin', 'java', 'android'
+    version '2019.1'
+    plugins 'Kotlin', 'android'
 }
 compileKotlin {
     kotlinOptions.jvmTarget = "1.8"

@@ -23,7 +23,7 @@ class DaggerStartProject : StartupActivity {
                 Thread{
                     project.log("TASK F - $executionResult")
                     Thread.sleep(5000)
-                    ApplicationManager.getApplication().runReadAction {
+                    ApplicationManager.getApplication().invokeLater {
                         project.log("TASK F", "Build Successful")
                         project.service.process(project)
                     }
