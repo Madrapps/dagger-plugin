@@ -35,12 +35,17 @@ class ViewParentsAction : AbstractViewAction() {
                     val treeModel = project.service.treeModel
                     val root = DefaultMutableTreeNode("")
                     treeModel.setRoot(root)
-                    project.service.nodes
-                        .filter { it.key == selectedNode.key && it.componentKey == selectedNode.componentKey }
-                        .forEach {
-                            root.add(it.createParentTree(project))
-                            treeModel.reload()
-                        }
+
+                    val node =
+                        project.service.nodes.find { it.key == selectedNode.key && it.componentKey == selectedNode.componentKey }
+                    if (node != null) {
+                        project.service.nodes
+                            .filter { it.key == node.key && it.element == node.element }
+                            .forEach {
+                                root.add(it.createParentTree(project))
+                                treeModel.reload()
+                            }
+                    }
                 }
             }
         }
