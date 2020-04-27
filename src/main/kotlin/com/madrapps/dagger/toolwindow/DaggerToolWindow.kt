@@ -8,6 +8,7 @@ import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.ui.AutoScrollToSourceHandler
+import com.intellij.ui.PopupHandler
 import com.intellij.ui.components.JBPanel
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.content.ContentFactory
@@ -102,7 +103,7 @@ class MyPanel(toolWindow: ToolWindow, project: Project) : SimpleToolWindowPanel(
         val expandAll = manager.getAction(ExpandAllAction.ID)
         val collapseAll = manager.getAction(CollapseAllAction.ID)
 
-        val defaultActionGroup = DefaultActionGroup().apply {
+        val toolbarActionGroup = DefaultActionGroup().apply {
             add(refreshAction)
             addSeparator()
             add(fullDaggerGraphAction)
@@ -114,9 +115,20 @@ class MyPanel(toolWindow: ToolWindow, project: Project) : SimpleToolWindowPanel(
             add(collapseAll)
         }
 
-        val actionToolbar = manager.createActionToolbar(ActionPlaces.TOOLWINDOW_TITLE, defaultActionGroup, true)
+        val actionToolbar = manager.createActionToolbar(ActionPlaces.TOOLWINDOW_TITLE, toolbarActionGroup, true)
         actionToolbar.setTargetComponent(toolbar)
         toolbar.add(actionToolbar.component)
+
+        // Show actions when selected issue is right clicked
+        PopupHandler.installPopupHandler(
+            tree,
+            DefaultActionGroup().apply {
+                add(viewParentsAction)
+                add(viewChildrenAction)
+            },
+            ActionPlaces.POPUP,
+            ActionManager.getInstance()
+        )
     }
 }
 

@@ -22,7 +22,7 @@ class AndroidStartProject : StartupActivity {
                     Thread{
                         project.log("AndroidStartProject", "Sleeping...")
                         Thread.sleep(5000)
-                        ApplicationManager.getApplication().runReadAction {
+                        ApplicationManager.getApplication().invokeLater {
                             project.log("AndroidStartProject", "Build Successful")
                             project.service.process(project)
                         }
