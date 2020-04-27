@@ -24,8 +24,10 @@ class CollapseAllAction : AnAction() {
         val project = e.project
         if (project != null) {
             val panel = project.service.getPanel()
-            val tree = panel.tree
-            TreeUtil.collapseAll(tree, 0)
+            if (panel != null) {
+                val tree = panel.tree
+                TreeUtil.collapseAll(tree, 0)
+            }
         }
     }
 }

@@ -24,8 +24,10 @@ class ExpandAllAction : AnAction() {
         val project = e.project
         if (project != null) {
             val panel = project.service.getPanel()
-            val tree = panel.tree
-            TreeUtil.expandAll(tree)
+            if (panel != null) {
+                val tree = panel.tree
+                TreeUtil.expandAll(tree)
+            }
         }
     }
 }

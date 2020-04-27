@@ -20,7 +20,7 @@ class ViewParentsAction : AbstractViewAction() {
         super.update(e)
         val project = e.project
         if (project != null) {
-            val selectedNode = project.service.getPanel().tree.selectedNode
+            val selectedNode = project.service.getPanel()?.tree?.selectedNode
             e.presentation.isEnabled = e.presentation.isEnabled && selectedNode != null
         }
     }
@@ -31,25 +31,27 @@ class ViewParentsAction : AbstractViewAction() {
             if (!isSelected(e)) {
                 project.log("View Parent")
                 project.service.viewToggler().clearSelection()
-                val tree = project.service.getPanel().tree
-                val selectedNode = tree.selectedNode as? SimplerNode
-                if (selectedNode != null) {
-                    val treeModel = project.service.treeModel
-                    val root = DefaultMutableTreeNode("")
-                    treeModel.setRoot(root)
+                val tree = project.service.getPanel()?.tree
+                if (tree != null) {
+                    val selectedNode = tree.selectedNode as? SimplerNode
+                    if (selectedNode != null) {
+                        val treeModel = project.service.treeModel
+                        val root = DefaultMutableTreeNode("")
+                        treeModel.setRoot(root)
 
-                    val node =
-                        project.service.nodes.find { it.key == selectedNode.key && it.componentKey == selectedNode.componentKey }
-                    if (node != null) {
-                        project.service.nodes
-                            .filter { it.key == node.key && it.element == node.element }
-                            .forEach {
-                                root.add(it.createParentTree(project))
-                                treeModel.reload()
-                            }
+                        val node =
+                            project.service.nodes.find { it.key == selectedNode.key && it.componentKey == selectedNode.componentKey }
+                        if (node != null) {
+                            project.service.nodes
+                                .filter { it.key == node.key && it.element == node.element }
+                                .forEach {
+                                    root.add(it.createParentTree(project))
+                                    treeModel.reload()
+                                }
+                        }
                     }
+                    TreeUtil.expandAll(tree)
                 }
-                TreeUtil.expandAll(tree)
             }
         }
     }

@@ -11,7 +11,7 @@ abstract class AbstractViewAction : ToggleAction() {
         val project = e.project
         if (project != null) {
             val treeModel = project.service.treeModel
-            val selectedNode = project.service.getPanel().tree.selectedNode
+            val selectedNode = project.service.getPanel()?.tree?.selectedNode
             e.presentation.isEnabled = treeModel.root != null || selectedNode != null
         }
     }

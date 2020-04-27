@@ -19,7 +19,7 @@ import javax.swing.tree.DefaultTreeModel
 @State(name = "com.madrapps.dagger", storages = [Storage(StoragePathMacros.WORKSPACE_FILE)])
 class DaggerServiceImpl(private val project: Project) : DaggerService, PersistentStateComponent<DaggerService.Storage> {
 
-    private lateinit var panel: DaggerWindowPanel
+    private var panel: DaggerWindowPanel? = null
     private val elements = mutableSetOf<UElement>()
 
     private val processor = Processor()
@@ -45,7 +45,7 @@ class DaggerServiceImpl(private val project: Project) : DaggerService, Persisten
         this.panel = panel
     }
 
-    override fun getPanel(): DaggerWindowPanel = panel
+    override fun getPanel(): DaggerWindowPanel? = panel
 
     override fun reset() {
         _nodes.clear()

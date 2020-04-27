@@ -33,7 +33,7 @@ interface DaggerService {
     fun log(title: String, content: String)
 
     fun setPanel(panel: DaggerWindowPanel)
-    fun getPanel(): DaggerWindowPanel
+    fun getPanel(): DaggerWindowPanel?
 
     val settings: Storage
 
