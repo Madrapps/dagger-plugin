@@ -61,7 +61,6 @@ class SimplerNode(
 
     init {
         project.service.addPsiElement(element.toUElement())
-        project.log("ELEMENT", element.toString())
     }
 
     override fun getChildren(): Array<SimpleNode> = NO_CHILDREN

@@ -1,6 +1,7 @@
 package com.madrapps.dagger.actions
 
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.util.ui.tree.TreeUtil
 import com.madrapps.dagger.core.createChildTree
 import com.madrapps.dagger.services.log
 import com.madrapps.dagger.services.service
@@ -30,7 +31,8 @@ class ViewChildrenAction : AbstractViewAction() {
             if (!isSelected(e)) {
                 project.log("View Children")
                 project.service.viewToggler().clearSelection()
-                val selectedNode = project.service.getPanel().tree.selectedNode as? SimplerNode
+                val tree = project.service.getPanel().tree
+                val selectedNode = tree.selectedNode as? SimplerNode
                 if (selectedNode != null) {
                     val treeModel = project.service.treeModel
                     val root = DefaultMutableTreeNode("")
@@ -42,6 +44,7 @@ class ViewChildrenAction : AbstractViewAction() {
                             treeModel.reload()
                         }
                 }
+                TreeUtil.expandAll(tree)
             }
         }
     }

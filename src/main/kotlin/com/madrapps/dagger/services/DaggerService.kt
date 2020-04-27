@@ -49,7 +49,7 @@ val Project.service: DaggerService
 
 fun Project.log(title: String, content: String) {
     println("$title : $content")
-    if (true) {
+    if (false) {
         service.log(title, content)
     }
 }
