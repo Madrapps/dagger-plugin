@@ -4,8 +4,20 @@
     <vendor email="madrasappfactory@gmail.com" url="https://github.com/Madrapps">Madrapps</vendor>
 
     <description><![CDATA[
-    Plugin to support working with Dagger 2 library</br>
-    ]]></description>
+    <p>Support for <b>Java/Kotlin</b> projects that uses <a href="https://dagger.dev/">Dagger 2</a> library</p><br/>
+    <p>Features</p>
+        <ul>
+            <li>View the dependency graph in tree format</li>
+            <li>Jump to source code from the graph</li>
+            <li>View parents and children of a node in the graph</li>
+            <li>Fully supported for project using both Java and Kotlin including Android</li>
+        </ul>
+    <p>Usage</p>
+        <ul>
+            <li>Build your project and the graph will be displayed in the <b>Dagger</b> tool window</li>
+            <li>Tap on <b>Refresh</b> in the Dagger tool window to refresh the graph</li>
+        </ul>]]>
+    </description>
 
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.lang</depends>
