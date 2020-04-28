@@ -5,7 +5,7 @@ IntelliJ iDEA plugin to work with projects using <a href="https://dagger.dev/">D
 
 Install
 -----
-You can install the plugin from `Preferences` -> `Plugins` and search for the plugin.
+You can install the plugin from `Preferences` -> `Plugins` and search for the plugin. You can also download the plugin from the <a href="https://plugins.jetbrains.com/plugin/14211-dagger">intelliJ iDEA Marketplace</a>.
 
 Features
 -----
