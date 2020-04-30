@@ -25,16 +25,17 @@ abstract class BaseTestCase(private val subDirectory: String) : LightJavaCodeIns
         }
     }
 
-    protected fun testValidationJava(vararg files: String) {
+    private val rootPath = File(testDataPath).toPath()
+
+    protected fun testValidation(vararg files: String) {
         val testName = getTestName(false)
-        myFixture.configureByFiles("${javaClass.simpleName.decapitalize()}/$testName.java", *files)
+        val extension = if (testName.startsWith("K")) "kt" else "java"
+
+        val assets = File(testDataPath, "assets").listFiles()?.map {
+            rootPath.relativize(it.toPath()).toString()
+        }?.toTypedArray() ?: emptyArray()
+
+        myFixture.configureByFiles("${javaClass.simpleName.decapitalize()}/$testName.$extension", *assets, *files)
         myFixture.testHighlighting()
     }
-
-    protected fun testValidationKotlin(vararg files: String) {
-        val testName = getTestName(false)
-        myFixture.configureByFiles("${javaClass.simpleName.decapitalize()}/$testName.kt", *files)
-        myFixture.testHighlighting()
-    }
-
 }
