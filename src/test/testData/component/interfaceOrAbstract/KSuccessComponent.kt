@@ -20,3 +20,23 @@ interface KInterfaceComponent {
 interface KInterfaceComponentWithModule {
 
 }
+
+@dagger.Component
+abstract class KAbstractClassComponentFullAnnotation {
+
+}
+
+@dagger.Component(modules = [EmptyModule::class])
+abstract class KAbstractClassComponentWithModuleFullAnnotation {
+
+}
+
+@dagger.Component
+interface KInterfaceComponentFullAnnotation {
+
+}
+
+@dagger.Component(modules = [EmptyModule::class])
+interface KInterfaceComponentWithModuleFullAnnotation {
+
+}
