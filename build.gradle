@@ -43,3 +43,7 @@ patchPluginXml {
     changeNotes """
 """
 }
+
+test {
+    systemProperty "idea.home.path", "/Users/sthiyagaraj/Me/SDK/Intellij/intellij-community/"
+}
