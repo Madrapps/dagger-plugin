@@ -39,6 +39,8 @@
                                         implementationClass="com.madrapps.dagger.markers.InputMarker"/>
         <codeInsight.lineMarkerProvider language="JAVA"
                                         implementationClass="com.madrapps.dagger.markers.InputMarker"/>
+        <annotator language="JAVA" implementationClass="com.madrapps.dagger.validation.ComponentAnnotator"/>
+        <annotator language="kotlin" implementationClass="com.madrapps.dagger.validation.ComponentAnnotator"/>
     </extensions>
 
     <actions>

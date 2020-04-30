@@ -5,7 +5,7 @@ plugins {
 }
 
 group 'com.madrapps'
-version '0.1.2020.1'
+version '0.2.2020.1'
 
 sourceCompatibility = 1.8
 
@@ -27,7 +27,6 @@ dependencies {
     implementation group: 'com.google.dagger', name: 'dagger-spi', version: '2.27'
 }
 
-// See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
     version '2020.1'
     plugins 'Kotlin', 'java', 'android'

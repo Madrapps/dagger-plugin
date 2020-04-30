@@ -3,6 +3,7 @@ package com.madrapps.dagger.services.impl
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
 import com.intellij.notification.Notifications
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
@@ -72,14 +73,16 @@ class DaggerServiceImpl(private val project: Project) : DaggerService, Persisten
         get() = _nodes
 
     override fun log(title: String, content: String) {
-        Notifications.Bus.notify(
-            Notification(
-                "Dagger",
-                title,
-                content,
-                NotificationType.INFORMATION
+        ApplicationManager.getApplication().invokeLater {
+            Notifications.Bus.notify(
+                Notification(
+                    "Dagger",
+                    title,
+                    content,
+                    NotificationType.INFORMATION
+                )
             )
-        )
+        }
     }
 
     override fun getState(): DaggerService.Storage? {
