@@ -11,9 +11,9 @@ import com.intellij.util.PathUtil
 import dagger.Component
 import java.io.File
 
-abstract class BaseTestCase : LightJavaCodeInsightFixtureTestCase() {
+abstract class BaseTestCase(private val subDirectory: String) : LightJavaCodeInsightFixtureTestCase() {
 
-    override fun getTestDataPath(): String = File("src/test", "testData").path
+    override fun getTestDataPath(): String = File("src/test/testData", subDirectory).path
 
     override fun getProjectDescriptor(): LightProjectDescriptor {
         return object : DefaultLightProjectDescriptor() {
@@ -24,4 +24,17 @@ abstract class BaseTestCase : LightJavaCodeInsightFixtureTestCase() {
             }
         }
     }
+
+    protected fun testValidationJava(vararg files: String) {
+        val testName = getTestName(false)
+        myFixture.configureByFiles("${javaClass.simpleName.decapitalize()}/$testName.java", *files)
+        myFixture.testHighlighting()
+    }
+
+    protected fun testValidationKotlin(vararg files: String) {
+        val testName = getTestName(false)
+        myFixture.configureByFiles("${javaClass.simpleName.decapitalize()}/$testName.kt", *files)
+        myFixture.testHighlighting()
+    }
+
 }
