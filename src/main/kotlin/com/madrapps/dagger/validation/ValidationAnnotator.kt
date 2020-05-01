@@ -5,11 +5,12 @@ import com.intellij.lang.annotation.Annotator
 import com.intellij.lang.annotation.HighlightSeverity.ERROR
 import com.intellij.psi.PsiElement
 import com.madrapps.dagger.validation.component.InterfaceOrAbstract
+import com.madrapps.dagger.validation.component.MultipleBuilderOrFactory
 import com.madrapps.dagger.validation.component.NoModuleAnnotation
 
 class ValidationAnnotator : Annotator {
 
-    private val problems = listOf(InterfaceOrAbstract, NoModuleAnnotation)
+    private val problems = listOf(InterfaceOrAbstract, NoModuleAnnotation, MultipleBuilderOrFactory)
 
     override fun annotate(element: PsiElement, holder: AnnotationHolder) {
         problems.forEach {
