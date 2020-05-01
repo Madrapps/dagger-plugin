@@ -2,20 +2,45 @@ package com.madrapps.dagger
 
 import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiClassType
+import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiJavaCodeReferenceElement
 import com.intellij.psi.util.PsiUtil
+import org.jetbrains.kotlin.psi.KtConstructorCalleeExpression
+import org.jetbrains.kotlin.psi.psiUtil.getChildOfType
 import org.jetbrains.uast.*
+
+private const val COMPONENT = "dagger.Component"
+private const val COMPONENT_BUILDER = "dagger.Component.Builder"
+private const val COMPONENT_FACTORY = "dagger.Component.Factory"
+private const val MODULE = "dagger.Module"
 
 val UClass.isAbstract: Boolean
     get() = PsiUtil.isAbstractClass(javaPsi)
 
+val UAnnotation.psiIdentifier: PsiElement
+    get() {
+        val element = sourcePsi!!
+        return element.getChildOfType<PsiJavaCodeReferenceElement>()
+            ?: element.getChildOfType<KtConstructorCalleeExpression>() ?: element
+    }
+
 val UAnnotation.isComponent: Boolean
-    get() = qualifiedName == "dagger.Component"
+    get() = qualifiedName == COMPONENT
+
+val UClass.isComponent: Boolean
+    get() = findAnnotation(COMPONENT) != null
+
+val UClass.isComponentFactory: Boolean
+    get() = findAnnotation(COMPONENT_FACTORY) != null
+
+val UClass.isComponentBuilder: Boolean
+    get() = findAnnotation(COMPONENT_BUILDER) != null
 
 val UAnnotation.isModule: Boolean
-    get() = qualifiedName == "dagger.Module"
+    get() = qualifiedName == MODULE
 
 val UClass.isModule: Boolean
-    get() = findAnnotation("dagger.Module") != null
+    get() = findAnnotation(MODULE) != null
 
 fun UAnnotation.modules(): List<UClassLiteralExpression> {
     val modules = findAttributeValue("modules")

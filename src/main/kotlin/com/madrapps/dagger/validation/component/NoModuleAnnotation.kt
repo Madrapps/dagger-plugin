@@ -14,10 +14,10 @@ import org.jetbrains.uast.toUElement
 object NoModuleAnnotation : Problem {
 
     override fun isError(element: PsiElement): List<Error> {
-        val uElement = element.toUElement()
-        if (uElement is UAnnotation) {
-            if (uElement.isComponent) {
-                return uElement.modules().mapNotNull {
+        val annotation = element.toUElement()
+        if (annotation is UAnnotation) {
+            if (annotation.isComponent) {
+                return annotation.modules().mapNotNull {
                     val uClass = (it.type as? PsiClassType)?.toUClass()
                     if (uClass?.isModule == false) {
                         it.sourcePsi?.let { range ->
