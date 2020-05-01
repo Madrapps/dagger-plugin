@@ -1,12 +1,12 @@
 import dagger.Component
-import assets.EmptyModule
+import assets.EmptyModuleOne
 
 @Component
 abstract class KAbstractClassComponent {
 
 }
 
-@Component(modules = [EmptyModule::class])
+@Component(modules = [EmptyModuleOne::class])
 abstract class KAbstractClassComponentWithModule {
 
 }
@@ -16,7 +16,7 @@ interface KInterfaceComponent {
 
 }
 
-@Component(modules = [EmptyModule::class])
+@Component(modules = [EmptyModuleOne::class])
 interface KInterfaceComponentWithModule {
 
 }
@@ -26,7 +26,7 @@ abstract class KAbstractClassComponentFullAnnotation {
 
 }
 
-@dagger.Component(modules = [EmptyModule::class])
+@dagger.Component(modules = [EmptyModuleOne::class])
 abstract class KAbstractClassComponentWithModuleFullAnnotation {
 
 }
@@ -36,7 +36,7 @@ interface KInterfaceComponentFullAnnotation {
 
 }
 
-@dagger.Component(modules = [EmptyModule::class])
+@dagger.Component(modules = [EmptyModuleOne::class])
 interface KInterfaceComponentWithModuleFullAnnotation {
 
 }

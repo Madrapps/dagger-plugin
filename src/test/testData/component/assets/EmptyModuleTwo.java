@@ -3,5 +3,5 @@ package assets;
 import dagger.Module;
 
 @Module
-public class EmptyModule {
+public class EmptyModuleTwo {
 }

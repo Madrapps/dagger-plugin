@@ -18,10 +18,10 @@ val UClass.isModule: Boolean
     get() = findAnnotation("dagger.Module") != null
 
 fun UAnnotation.modules(): List<UClassLiteralExpression> {
-    val uCallExpression = findAttributeValue("modules") as? UCallExpression
-    return uCallExpression?.valueArguments?.mapNotNull {
-        it as? UClassLiteralExpression
-    } ?: emptyList()
+    val modules = findAttributeValue("modules")
+    if (modules is UClassLiteralExpression) return listOf(modules)
+    if (modules is UCallExpression) return modules.valueArguments.mapNotNull { it as? UClassLiteralExpression }
+    return emptyList()
 }
 
 fun PsiClass.toUClass(): UClass? = toUElement() as? UClass

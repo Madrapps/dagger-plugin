@@ -1,7 +1,7 @@
 import dagger.Component;
-import assets.EmptyModule;
+import assets.EmptyModuleOne;
 
-@Component(modules = {EmptyModule.class})
+@Component(modules = {EmptyModuleOne.class})
 public interface InterfaceComponentWithModule {
 
 }

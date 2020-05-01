@@ -35,7 +35,7 @@ abstract class BaseTestCase(private val subDirectory: String) : LightJavaCodeIns
             rootPath.relativize(it.toPath()).toString()
         }?.toTypedArray() ?: emptyArray()
 
-        myFixture.configureByFiles("${javaClass.simpleName.decapitalize()}/$testName.$extension", *assets, *files)
+        myFixture.configureByFiles("${javaClass.simpleName}/$testName.$extension", *assets, *files)
         myFixture.testHighlighting()
     }
 }
