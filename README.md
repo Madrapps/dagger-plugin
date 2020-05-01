@@ -1,5 +1,5 @@
 # <img src="/preview/logo.png" title="logo" height="80" width="80" /> Dagger Plugin
-IntelliJ iDEA plugin to work with projects using <a href="https://dagger.dev/">Dagger 2</a> library
+IntelliJ iDEA plugin to work with <b>Java/Kotlin</b> projects using <a href="https://dagger.dev/">Dagger 2</a> library
 
 <img src="/preview/screenshare.gif" alt="preview" title="preview"/>
 
