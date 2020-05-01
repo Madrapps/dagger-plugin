@@ -2,8 +2,8 @@ package com.madrapps.dagger.validation.component
 
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiJavaCodeReferenceElement
-import com.intellij.psi.util.PsiUtil
 import com.madrapps.dagger.isAbstract
+import com.madrapps.dagger.isComponent
 import com.madrapps.dagger.validation.Problem
 import com.madrapps.dagger.validation.Problem.Error
 import org.jetbrains.kotlin.psi.KtConstructorCalleeExpression
@@ -14,18 +14,18 @@ import org.jetbrains.uast.toUElement
 
 object InterfaceOrAbstract : Problem {
 
-    override fun isError(element: PsiElement): Error? {
+    override fun isError(element: PsiElement): List<Error> {
         val uElement = element.toUElement()
         if (uElement is UAnnotation) {
-            if (uElement.qualifiedName == "dagger.Component") {
-                val uClass = uElement.getContainingUClass() ?: return null
+            if (uElement.isComponent) {
+                val uClass = uElement.getContainingUClass() ?: return emptyList()
                 if (!(uClass.isInterface || uClass.isAbstract)) {
                     val range = element.getChildOfType<PsiJavaCodeReferenceElement>()
                         ?: element.getChildOfType<KtConstructorCalleeExpression>() ?: element
-                    return Error(range, "@Component may only be applied to an interface or abstract class")
+                    return listOf(Error(range, "@Component may only be applied to an interface or abstract class"))
                 }
             }
         }
-        return null
+        return emptyList()
     }
 }

@@ -13,10 +13,10 @@ class ValidationAnnotator : Annotator {
 
     override fun annotate(element: PsiElement, holder: AnnotationHolder) {
         problems.forEach {
-            val error = it.isError(element)
-            if (error != null) {
-                holder.newAnnotation(ERROR, error.message)
-                    .range(error.range)
+            val errors = it.isError(element)
+            errors.forEach { (range, message) ->
+                holder.newAnnotation(ERROR, message)
+                    .range(range)
                     .create()
             }
         }
@@ -24,7 +24,7 @@ class ValidationAnnotator : Annotator {
 }
 
 interface Problem {
-    fun isError(element: PsiElement): Error?
+    fun isError(element: PsiElement): List<Error>
 
     data class Error(val range: PsiElement, val message: String)
 }
