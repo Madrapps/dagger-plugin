@@ -7,10 +7,16 @@ import com.intellij.psi.PsiElement
 import com.madrapps.dagger.validation.component.InterfaceOrAbstract
 import com.madrapps.dagger.validation.component.MultipleBuilderOrFactory
 import com.madrapps.dagger.validation.component.NoModuleAnnotation
+import com.madrapps.dagger.validation.inject.PrivateDeclaration
 
 class ValidationAnnotator : Annotator {
 
-    private val problems = listOf(InterfaceOrAbstract, NoModuleAnnotation, MultipleBuilderOrFactory)
+    private val problems = listOf(
+        InterfaceOrAbstract,
+        NoModuleAnnotation,
+        MultipleBuilderOrFactory,
+        PrivateDeclaration
+    )
 
     override fun annotate(element: PsiElement, holder: AnnotationHolder) {
         problems.forEach {

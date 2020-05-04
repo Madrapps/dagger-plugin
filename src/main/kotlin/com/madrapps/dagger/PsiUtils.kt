@@ -13,6 +13,7 @@ private const val COMPONENT = "dagger.Component"
 private const val COMPONENT_BUILDER = "dagger.Component.Builder"
 private const val COMPONENT_FACTORY = "dagger.Component.Factory"
 private const val MODULE = "dagger.Module"
+private const val INJECT = "javax.inject.Inject"
 
 val UClass.isAbstract: Boolean
     get() = PsiUtil.isAbstractClass(javaPsi)
@@ -41,6 +42,9 @@ val UAnnotation.isModule: Boolean
 
 val UClass.isModule: Boolean
     get() = findAnnotation(MODULE) != null
+
+val UAnnotation.isInject: Boolean
+    get() = qualifiedName == INJECT
 
 fun UAnnotation.modules(): List<UClassLiteralExpression> {
     val modules = findAttributeValue("modules")
