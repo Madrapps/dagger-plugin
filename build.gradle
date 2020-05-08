@@ -7,8 +7,6 @@ plugins {
 group 'com.madrapps'
 version '0.2.2020.1'
 
-sourceCompatibility = 1.8
-
 repositories {
     mavenCentral()
     maven { url "https://maven.google.com/" }
@@ -32,10 +30,17 @@ intellij {
     plugins 'Kotlin', 'java', 'android'
 }
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+}
+
 compileKotlin {
+    sourceCompatibility = JavaVersion.VERSION_1_8
     kotlinOptions.jvmTarget = "1.8"
 }
+
 compileTestKotlin {
+    sourceCompatibility = JavaVersion.VERSION_1_8
     kotlinOptions.jvmTarget = "1.8"
 }
 
@@ -47,3 +52,10 @@ patchPluginXml {
 test {
     systemProperty "idea.home.path", "${System.env.IDE_SOURCES}"
 }
+//
+//tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+//    kotlinOptions {
+//        jvmTarget = "1.8"
+//        freeCompilerArgs = ['--add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED']
+//    }
+//}
