@@ -45,5 +45,5 @@ patchPluginXml {
 }
 
 test {
-    systemProperty "idea.home.path", "/Users/sthiyagaraj/Me/SDK/Intellij/intellij-community/"
+    systemProperty "idea.home.path", "${System.env.IDE_SOURCES}"
 }
