@@ -1,5 +1,5 @@
 # <img src="/preview/logo.png" title="logo" height="80" width="80" /> Dagger Plugin
-[![Build status](https://teamcity.jetbrains.com/guestAuth/app/rest/builds/buildType:(id:OpenSourceProjects_Dagger)/statusIcon.svg)](https://teamcity.jetbrains.com/viewType.html?buildTypeId=OpenSourceProjects_Dagger_Test)
+[![Build status](https://teamcity.jetbrains.com/guestAuth/app/rest/builds/buildType:(id:OpenSourceProjects_Dagger)/statusIcon.svg)](https://teamcity.jetbrains.com/viewType.html?buildTypeId=OpenSourceProjects_Dagger_Test&guest=1)
 
 IntelliJ iDEA plugin to work with <b>Java/Kotlin</b> projects using <a href="https://dagger.dev/">Dagger 2</a> library
 
