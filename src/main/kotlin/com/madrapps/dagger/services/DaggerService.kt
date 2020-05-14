@@ -39,6 +39,7 @@ interface DaggerService {
 
     class Storage {
         var isAutoScrollToSource = false
+        var shouldCalculateAfterEveryBuild = false
     }
 }
 

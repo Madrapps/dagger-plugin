@@ -68,5 +68,9 @@
                 class="com.madrapps.dagger.actions.ExpandAllAction"
                 icon="AllIcons.Actions.Expandall"
                 text="Expand All"/>
+        <action id="com.madrapps.dagger.actions.GenerateGraphEveryBuildAction"
+                class="com.madrapps.dagger.actions.GenerateGraphEveryBuildAction"
+                icon="AllIcons.Toolwindows.ToolWindowBuild"
+                text="Generate Graph on Every Build"/>
     </actions>
 </idea-plugin>

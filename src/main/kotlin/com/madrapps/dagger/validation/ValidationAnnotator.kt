@@ -8,6 +8,7 @@ import com.madrapps.dagger.validation.component.InterfaceOrAbstract
 import com.madrapps.dagger.validation.component.MultipleBuilderOrFactory
 import com.madrapps.dagger.validation.component.NoModuleAnnotation
 import com.madrapps.dagger.validation.inject.PrivateDeclaration
+import com.madrapps.dagger.validation.inject.ScopeOnConstructor
 
 class ValidationAnnotator : Annotator {
 
@@ -15,16 +16,18 @@ class ValidationAnnotator : Annotator {
         InterfaceOrAbstract,
         NoModuleAnnotation,
         MultipleBuilderOrFactory,
-        PrivateDeclaration
+        PrivateDeclaration,
+        ScopeOnConstructor
     )
 
     override fun annotate(element: PsiElement, holder: AnnotationHolder) {
         problems.forEach {
             val errors = it.isError(element)
             errors.forEach { (range, message) ->
-                holder.newAnnotation(ERROR, message)
-                    .range(range)
-                    .create()
+                holder.createErrorAnnotation(range, message)
+//                holder.newAnnotation(ERROR, message)
+//                    .range(range)
+//                    .create()
             }
         }
     }

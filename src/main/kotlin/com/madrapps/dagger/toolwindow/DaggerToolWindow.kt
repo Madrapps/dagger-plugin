@@ -102,6 +102,7 @@ class MyPanel(toolWindow: ToolWindow, project: Project) : SimpleToolWindowPanel(
         val autoScroll = autoScrollHandler.createToggleAction()
         val expandAll = manager.getAction(ExpandAllAction.ID)
         val collapseAll = manager.getAction(CollapseAllAction.ID)
+        val generateGraphEveryBuild = manager.getAction(GenerateGraphEveryBuildAction.ID)
 
         val toolbarActionGroup = DefaultActionGroup().apply {
             add(refreshAction)
@@ -110,9 +111,11 @@ class MyPanel(toolWindow: ToolWindow, project: Project) : SimpleToolWindowPanel(
             add(viewParentsAction)
             add(viewChildrenAction)
             addSeparator()
-            add(autoScroll)
             add(expandAll)
             add(collapseAll)
+            addSeparator()
+            add(autoScroll)
+            add(generateGraphEveryBuild)
         }
 
         val actionToolbar = manager.createActionToolbar(ActionPlaces.TOOLWINDOW_TITLE, toolbarActionGroup, true)

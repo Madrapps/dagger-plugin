@@ -19,14 +19,16 @@ class AndroidStartProject : StartupActivity {
                 val build = context.buildResult
                 project.log("AndroidStartProject", "Build - $build")
                 if (build.isBuildSuccessful) {
-                    Thread{
-                        project.log("AndroidStartProject", "Sleeping...")
-                        Thread.sleep(5000)
-                        ApplicationManager.getApplication().invokeLater {
-                            project.log("AndroidStartProject", "Build Successful")
-                            project.service.process(project)
-                        }
-                    }.start()
+                    if (project.service.settings.shouldCalculateAfterEveryBuild || project.service.treeModel.root == null ) {
+                        Thread{
+                            project.log("AndroidStartProject", "Sleeping...")
+                            Thread.sleep(5000)
+                            ApplicationManager.getApplication().invokeLater {
+                                project.log("AndroidStartProject", "Build Successful")
+                                project.service.process(project)
+                            }
+                        }.start()
+                    }
                 }
             }
         }
