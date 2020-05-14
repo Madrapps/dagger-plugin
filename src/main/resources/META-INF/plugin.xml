@@ -72,5 +72,8 @@
                 class="com.madrapps.dagger.actions.GenerateGraphEveryBuildAction"
                 icon="AllIcons.Toolwindows.ToolWindowBuild"
                 text="Generate Graph on Every Build"/>
+        <action id="com.madrapps.dagger.actions.ValidationSwitchAction"
+                class="com.madrapps.dagger.actions.ValidationSwitchAction"
+                text="Turn On Validation"/>
     </actions>
 </idea-plugin>

@@ -7,6 +7,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
+import com.intellij.openapi.wm.ex.ToolWindowEx
 import com.intellij.ui.AutoScrollToSourceHandler
 import com.intellij.ui.PopupHandler
 import com.intellij.ui.components.JBPanel
@@ -35,7 +36,8 @@ class DaggerToolWindow : ToolWindowFactory {
     }
 }
 
-class MyPanel(toolWindow: ToolWindow, project: Project) : SimpleToolWindowPanel(true, true), DaggerWindowPanel {
+class MyPanel(private val toolWindow: ToolWindow, project: Project) : SimpleToolWindowPanel(true, true),
+    DaggerWindowPanel {
 
     override val tree: DaggerTree = DaggerTree(project.service.treeModel)
     private val autoScrollHandler: AutoScrollToSourceHandler
@@ -69,6 +71,7 @@ class MyPanel(toolWindow: ToolWindow, project: Project) : SimpleToolWindowPanel(
 
         val toolbar = JPanel(BorderLayout())
         initToolbar(toolbar)
+        initSettingsOptions()
 
         tree.isRootVisible = false
         tree.toggleClickCount = 3
@@ -91,6 +94,16 @@ class MyPanel(toolWindow: ToolWindow, project: Project) : SimpleToolWindowPanel(
         })
 
         return panel
+    }
+
+    private fun initSettingsOptions() {
+        val manager = ActionManager.getInstance()
+        val validationSwitchAction = manager.getAction(ValidationSwitchAction.ID)
+
+        val toolbarActionGroup = DefaultActionGroup().apply {
+            add(validationSwitchAction)
+        }
+        (toolWindow as? ToolWindowEx)?.setAdditionalGearActions(toolbarActionGroup)
     }
 
     private fun initToolbar(toolbar: JPanel) {
