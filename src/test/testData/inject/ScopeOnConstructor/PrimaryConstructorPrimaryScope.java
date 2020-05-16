@@ -5,8 +5,8 @@ import assets.Car;
 
 public class PrimaryConstructorPrimaryScope {
 
-    @Singleton
-    @<error descr="@Scope annotations [@Singleton] are not allowed on @Inject constructors; annotate the class instead">Inject</error>
+    @PrimaryScope
+    @<error descr="@Scope annotations [@PrimaryScope] are not allowed on @Inject constructors; annotate the class instead">Inject</error>
     PrimaryConstructorPrimaryScope() {
 
     }

@@ -14,6 +14,7 @@ private const val COMPONENT_FACTORY = "dagger.Component.Factory"
 private const val MODULE = "dagger.Module"
 private const val INJECT = "javax.inject.Inject"
 private const val SCOPE = "javax.inject.Scope"
+private const val QUALIFIER = "javax.inject.Qualifier"
 
 val UClass.isAbstract: Boolean
     get() = PsiUtil.isAbstractClass(javaPsi)
@@ -72,3 +73,6 @@ val UMethod.psiAnnotations: List<PsiAnnotation>
 
 val PsiClass.isScope: Boolean
     get() = hasAnnotation(SCOPE)
+
+val PsiClass.isQualifier: Boolean
+    get() = hasAnnotation(QUALIFIER)
