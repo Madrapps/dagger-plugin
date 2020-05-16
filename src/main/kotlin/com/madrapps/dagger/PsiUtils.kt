@@ -1,19 +1,19 @@
 package com.madrapps.dagger
 
-import com.intellij.psi.PsiClass
-import com.intellij.psi.PsiClassType
-import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiJavaCodeReferenceElement
+import com.intellij.psi.*
 import com.intellij.psi.util.PsiUtil
 import org.jetbrains.kotlin.psi.KtConstructorCalleeExpression
 import org.jetbrains.kotlin.psi.psiUtil.getChildOfType
 import org.jetbrains.uast.*
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.contract
 
 private const val COMPONENT = "dagger.Component"
 private const val COMPONENT_BUILDER = "dagger.Component.Builder"
 private const val COMPONENT_FACTORY = "dagger.Component.Factory"
 private const val MODULE = "dagger.Module"
 private const val INJECT = "javax.inject.Inject"
+private const val SCOPE = "javax.inject.Scope"
 
 val UClass.isAbstract: Boolean
     get() = PsiUtil.isAbstractClass(javaPsi)
@@ -56,3 +56,19 @@ fun UAnnotation.modules(): List<UClassLiteralExpression> {
 fun PsiClass.toUClass(): UClass? = toUElement() as? UClass
 
 fun PsiClassType.toUClass(): UClass? = resolve()?.toUClass()
+
+@OptIn(ExperimentalContracts::class)
+fun UDeclaration.isConstructor(): Boolean {
+    contract {
+        returns(true) implies (this@isConstructor is UMethod)
+    }
+    return (this as? UMethod)?.isConstructor == true
+}
+
+fun PsiAnnotation.psiClass(): PsiClass? = nameReferenceElement?.resolve() as? PsiClass
+
+val UMethod.psiAnnotations: List<PsiAnnotation>
+    get() = this.javaPsi.annotations.toList()
+
+val PsiClass.isScope: Boolean
+    get() = hasAnnotation(SCOPE)
