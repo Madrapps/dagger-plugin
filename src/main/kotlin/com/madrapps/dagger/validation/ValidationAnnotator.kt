@@ -7,9 +7,6 @@ import com.madrapps.dagger.services.service
 import com.madrapps.dagger.validation.component.InterfaceOrAbstract
 import com.madrapps.dagger.validation.component.MultipleBuilderOrFactory
 import com.madrapps.dagger.validation.component.NoModuleAnnotation
-import com.madrapps.dagger.validation.inject.PrivateDeclaration
-import com.madrapps.dagger.validation.inject.QualifierOnConstructor
-import com.madrapps.dagger.validation.inject.ScopeOnConstructor
 
 class ValidationAnnotator : Annotator {
 
@@ -17,9 +14,7 @@ class ValidationAnnotator : Annotator {
         InterfaceOrAbstract,
         NoModuleAnnotation,
         MultipleBuilderOrFactory,
-        PrivateDeclaration,
-        ScopeOnConstructor,
-        QualifierOnConstructor
+        InjectProblem
     )
 
     override fun annotate(element: PsiElement, holder: AnnotationHolder) {
