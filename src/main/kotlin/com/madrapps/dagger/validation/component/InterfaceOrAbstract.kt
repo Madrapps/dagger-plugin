@@ -1,7 +1,7 @@
 package com.madrapps.dagger.validation.component
 
-import com.madrapps.dagger.isAbstract
-import com.madrapps.dagger.psiIdentifier
+import com.madrapps.dagger.utils.isAbstract
+import com.madrapps.dagger.utils.psiIdentifier
 import com.madrapps.dagger.validation.Problem.Error
 import org.jetbrains.uast.UAnnotation
 import org.jetbrains.uast.getContainingUClass

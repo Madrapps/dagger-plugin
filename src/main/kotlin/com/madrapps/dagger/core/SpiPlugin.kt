@@ -1,14 +1,12 @@
-package com.madrapps.dagger
+package com.madrapps.dagger.core
 
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
-import com.madrapps.dagger.core.Node
-import com.madrapps.dagger.core.NodeType
-import com.madrapps.dagger.core.createChildTree
-import com.madrapps.dagger.core.toNodeType
 import com.madrapps.dagger.services.log
 import com.madrapps.dagger.services.service
+import com.madrapps.dagger.utils.*
+import com.madrapps.dagger.utils.name
 import com.sun.tools.javac.code.Attribute
 import com.sun.tools.javac.code.Symbol
 import com.sun.tools.javac.code.Type

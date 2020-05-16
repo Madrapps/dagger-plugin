@@ -1,7 +1,7 @@
 package com.madrapps.dagger.validation.component
 
 import com.intellij.psi.PsiElement
-import com.madrapps.dagger.isComponent
+import com.madrapps.dagger.utils.isComponent
 import com.madrapps.dagger.validation.Problem
 import org.jetbrains.uast.UAnnotation
 import org.jetbrains.uast.toUElement

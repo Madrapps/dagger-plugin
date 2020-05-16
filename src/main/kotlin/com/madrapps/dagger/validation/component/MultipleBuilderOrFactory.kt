@@ -1,8 +1,8 @@
 package com.madrapps.dagger.validation.component
 
-import com.madrapps.dagger.isComponentBuilder
-import com.madrapps.dagger.isComponentFactory
-import com.madrapps.dagger.psiIdentifier
+import com.madrapps.dagger.utils.isComponentBuilder
+import com.madrapps.dagger.utils.isComponentFactory
+import com.madrapps.dagger.utils.psiIdentifier
 import com.madrapps.dagger.validation.Problem.Error
 import org.jetbrains.uast.UAnnotation
 import org.jetbrains.uast.getContainingUClass

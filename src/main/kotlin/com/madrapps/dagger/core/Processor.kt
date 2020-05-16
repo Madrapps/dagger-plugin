@@ -14,9 +14,8 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import com.intellij.tasks.TaskManager
 import com.intellij.util.PathUtil
-import com.madrapps.dagger.SpiPlugin
-import com.madrapps.dagger.getCompilerOutputFile
-import com.madrapps.dagger.getKotlinOutputDir
+import com.madrapps.dagger.utils.getCompilerOutputFile
+import com.madrapps.dagger.utils.getKotlinOutputDir
 import com.madrapps.dagger.services.log
 import com.sun.tools.javac.api.JavacTool
 import dagger.android.processor.AndroidProcessor

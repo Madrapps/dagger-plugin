@@ -1,7 +1,7 @@
 package com.madrapps.dagger.validation
 
 import com.intellij.psi.PsiElement
-import com.madrapps.dagger.*
+import com.madrapps.dagger.utils.*
 import org.jetbrains.kotlin.asJava.classes.isPrivateOrParameterInPrivateMethod
 import org.jetbrains.uast.*
 

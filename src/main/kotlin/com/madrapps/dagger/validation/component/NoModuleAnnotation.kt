@@ -1,9 +1,9 @@
 package com.madrapps.dagger.validation.component
 
 import com.intellij.psi.PsiClassType
-import com.madrapps.dagger.isModule
-import com.madrapps.dagger.modules
-import com.madrapps.dagger.toUClass
+import com.madrapps.dagger.utils.isModule
+import com.madrapps.dagger.utils.modules
+import com.madrapps.dagger.utils.toUClass
 import com.madrapps.dagger.validation.Problem.Error
 import org.jetbrains.uast.UAnnotation
 

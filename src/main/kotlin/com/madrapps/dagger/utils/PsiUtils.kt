@@ -1,4 +1,4 @@
-package com.madrapps.dagger
+package com.madrapps.dagger.utils
 
 import com.intellij.psi.*
 import com.intellij.psi.util.PsiUtil
