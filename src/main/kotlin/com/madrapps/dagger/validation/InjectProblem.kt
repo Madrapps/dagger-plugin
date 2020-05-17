@@ -38,7 +38,15 @@ object InjectProblem : Problem {
         errors += validatePrivateConstructor(method, range)
         errors += validateScopeOnConstructor(method, range)
         errors += validateQualifierOnConstructor(method, range)
+        errors += validateAbstractClass(method, range)
         return errors
+    }
+
+    private fun validateAbstractClass(method: UMethod, range: PsiElement): List<Problem.Error> {
+        if (method.getContainingUClass()?.isAbstract == true) {
+            return range.errors("@Inject is nonsense on the constructor of an abstract class")
+        }
+        return emptyList()
     }
 
     private fun validateScopeOnConstructor(method: UMethod, range: PsiElement): List<Problem.Error> {
