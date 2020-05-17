@@ -39,8 +39,18 @@ object InjectProblem : Problem {
         return if (method.isConstructor) {
             validateConstructor(method, range)
         } else {
-            validatePrivateMethod(method, range)
+            val errors = mutableListOf<Problem.Error>()
+            errors += validatePrivateMethod(method, range)
+            errors += validateAbstractMethod(method, range)
+            errors
         }
+    }
+
+    private fun validateAbstractMethod(method: UMethod, range: PsiElement): List<Problem.Error> {
+        if (method.isAbstract) {
+            return range.errors("Methods with @Inject may not be abstract")
+        }
+        return emptyList()
     }
 
     private fun validateConstructor(method: UMethod, range: PsiElement): List<Problem.Error> {
