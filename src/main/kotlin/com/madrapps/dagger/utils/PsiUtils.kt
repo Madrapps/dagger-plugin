@@ -2,9 +2,12 @@ package com.madrapps.dagger.utils
 
 import com.intellij.psi.*
 import com.intellij.psi.util.PsiUtil
+import org.jetbrains.kotlin.asJava.classes.KtUltraLightClass
 import org.jetbrains.kotlin.psi.KtConstructorCalleeExpression
+import org.jetbrains.kotlin.psi.KtObjectDeclaration
 import org.jetbrains.kotlin.psi.psiUtil.getChildOfType
 import org.jetbrains.uast.*
+import org.jetbrains.uast.kotlin.KotlinUClass
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 
@@ -79,3 +82,6 @@ val PsiClass.isScope: Boolean
 
 val PsiClass.isQualifier: Boolean
     get() = hasAnnotation(QUALIFIER)
+
+val UClass.isKotlinObject: Boolean
+    get() = (this as? KotlinUClass)?.ktClass is KtObjectDeclaration

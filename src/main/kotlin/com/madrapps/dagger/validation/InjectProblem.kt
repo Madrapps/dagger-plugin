@@ -42,8 +42,16 @@ object InjectProblem : Problem {
             val errors = mutableListOf<Problem.Error>()
             errors += validatePrivateMethod(method, range)
             errors += validateAbstractMethod(method, range)
+            errors += validateStaticMethod(method, range)
             errors
         }
+    }
+
+    private fun validateStaticMethod(method: UMethod, range: PsiElement): List<Problem.Error> {
+        if (method.isStatic || method.getContainingUClass()?.isKotlinObject == true) {
+            return range.errors("Dagger does not support injection into static methods")
+        }
+        return emptyList()
     }
 
     private fun validateAbstractMethod(method: UMethod, range: PsiElement): List<Problem.Error> {
