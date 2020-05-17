@@ -22,7 +22,17 @@ object InjectProblem : Problem {
     }
 
     private fun validateField(field: UVariable, range: PsiElement): List<Problem.Error> {
-        return validatePrivateField(field, range)
+        val errors = mutableListOf<Problem.Error>()
+        errors += validateFinalField(field, range)
+        errors += validatePrivateField(field, range)
+        return errors
+    }
+
+    private fun validateFinalField(field: UVariable, range: PsiElement): List<Problem.Error> {
+        if (field.isFinal) {
+            return range.errors("@Inject fields may not be final")
+        }
+        return emptyList()
     }
 
     private fun validateMethod(method: UMethod, range: PsiElement): List<Problem.Error> {
