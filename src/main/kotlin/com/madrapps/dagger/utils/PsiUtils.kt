@@ -53,6 +53,9 @@ val UClass.isModule: Boolean
 val UAnnotation.isInject: Boolean
     get() = qualifiedName == INJECT
 
+val UMethod.isInject: Boolean
+    get() = findAnnotation(INJECT) != null
+
 fun UAnnotation.modules(): List<UClassLiteralExpression> {
     val modules = findAttributeValue("modules")
     if (modules is UClassLiteralExpression) return listOf(modules)

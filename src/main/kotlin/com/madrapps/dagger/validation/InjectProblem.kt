@@ -29,20 +29,6 @@ object InjectProblem : Problem {
         return errors
     }
 
-    private fun validateStaticField(field: UVariable, range: PsiElement): List<Problem.Error> {
-        if (field.isStatic || field.getContainingUClass()?.isKotlinObject == true) {
-            return range.errors("Dagger does not support injection into static fields")
-        }
-        return emptyList()
-    }
-
-    private fun validateFinalField(field: UVariable, range: PsiElement): List<Problem.Error> {
-        if (field.isFinal) {
-            return range.errors("@Inject fields may not be final")
-        }
-        return emptyList()
-    }
-
     private fun validateMethod(method: UMethod, range: PsiElement): List<Problem.Error> {
         return if (method.isConstructor) {
             validateConstructor(method, range)
@@ -55,27 +41,23 @@ object InjectProblem : Problem {
         }
     }
 
-    private fun validateStaticMethod(method: UMethod, range: PsiElement): List<Problem.Error> {
-        if (method.isStatic || method.getContainingUClass()?.isKotlinObject == true) {
-            return range.errors("Dagger does not support injection into static methods")
-        }
-        return emptyList()
-    }
-
-    private fun validateAbstractMethod(method: UMethod, range: PsiElement): List<Problem.Error> {
-        if (method.isAbstract) {
-            return range.errors("Methods with @Inject may not be abstract")
-        }
-        return emptyList()
-    }
-
     private fun validateConstructor(method: UMethod, range: PsiElement): List<Problem.Error> {
         val errors = mutableListOf<Problem.Error>()
         errors += validatePrivateConstructor(method, range)
         errors += validateScopeOnConstructor(method, range)
         errors += validateQualifierOnConstructor(method, range)
         errors += validateAbstractClass(method, range)
+        errors += validateIfSingleAnnotation(method, range)
         return errors
+    }
+
+    private fun validateIfSingleAnnotation(method: UMethod, range: PsiElement): List<Problem.Error> {
+        val uClass = method.getContainingUClass() ?: return emptyList()
+        val constructorsWithInject = uClass.methods.filter { it.isConstructor && it.isInject }.count()
+        if (constructorsWithInject > 1) {
+            return range.errors("Types may only contain one @Inject constructor")
+        }
+        return emptyList()
     }
 
     private fun validateAbstractClass(method: UMethod, range: PsiElement): List<Problem.Error> {
@@ -121,6 +103,34 @@ object InjectProblem : Problem {
         }
         return emptyList()
     }
+
+    private fun validateStaticField(field: UVariable, range: PsiElement): List<Problem.Error> {
+        if (field.isStatic || field.getContainingUClass()?.isKotlinObject == true) {
+            return range.errors("Dagger does not support injection into static fields")
+        }
+        return emptyList()
+    }
+
+    private fun validateFinalField(field: UVariable, range: PsiElement): List<Problem.Error> {
+        if (field.isFinal) {
+            return range.errors("@Inject fields may not be final")
+        }
+        return emptyList()
+    }
+
+    private fun validateStaticMethod(method: UMethod, range: PsiElement): List<Problem.Error> {
+        if (method.isStatic || method.getContainingUClass()?.isKotlinObject == true) {
+            return range.errors("Dagger does not support injection into static methods")
+        }
+        return emptyList()
+    }
+
+    private fun validateAbstractMethod(method: UMethod, range: PsiElement): List<Problem.Error> {
+        if (method.isAbstract) {
+            return range.errors("Methods with @Inject may not be abstract")
+        }
+        return emptyList()
+    }
 }
 
 private fun PsiElement.errors(msg: String): List<Problem.Error> {
@@ -140,4 +150,3 @@ private fun UMethod.getPresentableAnnotatedQualifiers(): String {
         if (psiClass?.isQualifier == true) "@${psiClass.name}" else null
     }.joinToString(", ")
 }
-
