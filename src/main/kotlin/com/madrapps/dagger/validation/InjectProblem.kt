@@ -25,7 +25,15 @@ object InjectProblem : Problem {
         val errors = mutableListOf<Problem.Error>()
         errors += validateFinalField(field, range)
         errors += validatePrivateField(field, range)
+        errors += validateStaticField(field, range)
         return errors
+    }
+
+    private fun validateStaticField(field: UVariable, range: PsiElement): List<Problem.Error> {
+        if (field.isStatic || field.getContainingUClass()?.isKotlinObject == true) {
+            return range.errors("Dagger does not support injection into static fields")
+        }
+        return emptyList()
     }
 
     private fun validateFinalField(field: UVariable, range: PsiElement): List<Problem.Error> {
