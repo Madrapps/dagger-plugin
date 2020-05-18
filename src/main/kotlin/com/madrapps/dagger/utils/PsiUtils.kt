@@ -2,7 +2,6 @@ package com.madrapps.dagger.utils
 
 import com.intellij.psi.*
 import com.intellij.psi.util.PsiUtil
-import org.jetbrains.kotlin.asJava.classes.KtUltraLightClass
 import org.jetbrains.kotlin.psi.KtConstructorCalleeExpression
 import org.jetbrains.kotlin.psi.KtObjectDeclaration
 import org.jetbrains.kotlin.psi.psiUtil.getChildOfType
@@ -53,6 +52,9 @@ val UClass.isModule: Boolean
 val UAnnotation.isInject: Boolean
     get() = qualifiedName == INJECT
 
+val UAnnotation.isScope: Boolean
+    get() = qualifiedName == SCOPE
+
 val UMethod.isInject: Boolean
     get() = findAnnotation(INJECT) != null
 
@@ -78,6 +80,9 @@ fun UDeclaration.isConstructor(): Boolean {
 fun PsiAnnotation.psiClass(): PsiClass? = nameReferenceElement?.resolve() as? PsiClass
 
 val UMethod.psiAnnotations: List<PsiAnnotation>
+    get() = this.javaPsi.annotations.toList()
+
+val UClass.psiAnnotations: List<PsiAnnotation>
     get() = this.javaPsi.annotations.toList()
 
 val PsiClass.isScope: Boolean

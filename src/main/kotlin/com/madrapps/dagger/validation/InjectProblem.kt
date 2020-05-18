@@ -48,7 +48,17 @@ object InjectProblem : Problem {
         errors += validateQualifierOnConstructor(method, range)
         errors += validateAbstractClass(method, range)
         errors += validateIfSingleAnnotation(method, range)
+        errors += validateMultipleScope(method, range)
         return errors
+    }
+
+    private fun validateMultipleScope(method: UMethod, range: PsiElement): List<Problem.Error> {
+        val uClass = method.getContainingUClass() ?: return emptyList()
+        val scopes = uClass.scopes()
+        if (scopes.size > 1) {
+            return range.errors("A single binding may not declare more than one @Scope [${scopes.joinToString(", ")}]")
+        }
+        return emptyList()
     }
 
     private fun validateIfSingleAnnotation(method: UMethod, range: PsiElement): List<Problem.Error> {
@@ -149,4 +159,11 @@ private fun UMethod.getPresentableAnnotatedQualifiers(): String {
         val psiClass = it.psiClass()
         if (psiClass?.isQualifier == true) "@${psiClass.name}" else null
     }.joinToString(", ")
+}
+
+private fun UClass.scopes(): List<String> {
+    return psiAnnotations.mapNotNull {
+        val psiClass = it.psiClass()
+        if (psiClass?.isScope == true) "@${psiClass.name}" else null
+    }
 }
