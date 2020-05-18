@@ -1,10 +1,14 @@
 import javax.inject.Inject
-import assets.Car;
+import assets.Car
 
 class KPrimaryConstructor @Inject constructor() {
 
     @Inject
     lateinit var kField: Car
+
+    @JvmField
+    @Inject
+    var car: Car? = null
 
     @Inject
     fun kMethod(car: Car) {

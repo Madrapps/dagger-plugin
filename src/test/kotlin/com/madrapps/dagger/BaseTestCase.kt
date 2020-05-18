@@ -22,8 +22,10 @@ abstract class BaseTestCase(private val subDirectory: String) : LightJavaCodeIns
                 super.configureModule(module, model, contentEntry)
                 val daggerJar = File(PathUtil.getJarPathForClass(Component::class.java))
                 val injectJar = File(PathUtil.getJarPathForClass(Inject::class.java))
+                val jvmJar = File(PathUtil.getJarPathForClass(JvmField::class.java))
                 PsiTestUtil.addLibrary(model, daggerJar.name, daggerJar.parent, daggerJar.name)
                 PsiTestUtil.addLibrary(model, injectJar.name, injectJar.parent, injectJar.name)
+                PsiTestUtil.addLibrary(model, jvmJar.name, jvmJar.parent, jvmJar.name)
             }
         }
     }

@@ -6,6 +6,9 @@ class KPrimaryConstructor @<error descr="Dagger does not support injection into 
     @<error descr="Dagger does not support injection into private fields">Inject</error>
     private lateinit var kField: Car
 
+    @<error descr="Dagger does not support injection into private fields">Inject</error>
+    var car: Car? = null
+
     @<error descr="Dagger does not support injection into private methods">Inject</error>
     private fun kMethod(car: Car) {
 
