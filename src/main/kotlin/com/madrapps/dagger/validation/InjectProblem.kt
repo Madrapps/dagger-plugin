@@ -38,8 +38,20 @@ object InjectProblem : Problem {
             errors += validateAbstractMethod(method, range)
             errors += validateStaticMethod(method, range)
             errors += validateTypeParameter(method, range)
+            errors += validateCheckExceptionMethod(method, range)
             errors
         }
+    }
+
+    private fun validateCheckExceptionMethod(method: UMethod, range: PsiElement): List<Problem.Error> {
+        val checkedExceptions = method.checkExceptionsThrown()
+        if (checkedExceptions.isNotEmpty()) {
+            return range.errors(
+                "Methods with @Inject may not throw checked exceptions ${checkedExceptions.presentable}. " +
+                        "Please wrap your exceptions in a RuntimeException instead."
+            )
+        }
+        return emptyList()
     }
 
     private fun validateTypeParameter(method: UMethod, range: PsiElement): List<Problem.Error> {
