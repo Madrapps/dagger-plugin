@@ -41,4 +41,4 @@ The test cases (classes and methods) are created at compile time by means of the
 <a href="https://github.com/thsaravana/dagger-plugin-processor">`dagger-plugin-processor`</a>. The above testData
 directory structure is crucial for the processor to work properly.
 
-For more clarity, take a look at `src/test/kotlin/com.madrapps.dagger.InjectTestCase.kt`
+For more clarity, take a look at [`src/test/kotlin/com.madrapps.dagger.InjectTestCase.kt`](https://github.com/Madrapps/dagger-plugin/blob/master/src/test/kotlin/com/madrapps/dagger/InjectTestCase.kt)
