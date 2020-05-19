@@ -49,14 +49,23 @@ object InjectProblem : Problem {
         errors += validateAbstractClass(method, range)
         errors += validateIfSingleAnnotation(method, range)
         errors += validateMultipleScope(method, range)
+        errors += validateCheckExceptionConstructor(method, range)
         return errors
+    }
+
+    private fun validateCheckExceptionConstructor(method: UMethod, range: PsiElement): List<Problem.Error> {
+        val checkedExceptions = method.checkExceptionsThrown()
+        if (checkedExceptions.isNotEmpty()) {
+            return range.errors("Dagger does not support checked exceptions ${checkedExceptions.presentable} on @Inject constructors")
+        }
+        return emptyList()
     }
 
     private fun validateMultipleScope(method: UMethod, range: PsiElement): List<Problem.Error> {
         val uClass = method.getContainingUClass() ?: return emptyList()
         val scopes = uClass.scopes()
         if (scopes.size > 1) {
-            return range.errors("A single binding may not declare more than one @Scope [${scopes.joinToString(", ")}]")
+            return range.errors("A single binding may not declare more than one @Scope ${scopes.presentable}")
         }
         return emptyList()
     }
@@ -78,17 +87,17 @@ object InjectProblem : Problem {
     }
 
     private fun validateScopeOnConstructor(method: UMethod, range: PsiElement): List<Problem.Error> {
-        val scopes = method.getPresentableAnnotatedScopes()
-        if (scopes.isNotBlank()) {
-            return range.errors("@Scope annotations [$scopes] are not allowed on @Inject constructors; annotate the class instead")
+        val scopes = method.scopes()
+        if (scopes.isNotEmpty()) {
+            return range.errors("@Scope annotations ${scopes.presentable} are not allowed on @Inject constructors; annotate the class instead")
         }
         return emptyList()
     }
 
     private fun validateQualifierOnConstructor(method: UMethod, range: PsiElement): List<Problem.Error> {
-        val qualifiers = method.getPresentableAnnotatedQualifiers()
-        if (qualifiers.isNotBlank()) {
-            return range.errors("@Qualifier annotations [$qualifiers] are not allowed on @Inject constructors")
+        val qualifiers = method.qualifiers()
+        if (qualifiers.isNotEmpty()) {
+            return range.errors("@Qualifier annotations ${qualifiers.presentable} are not allowed on @Inject constructors")
         }
         return emptyList()
     }
@@ -145,25 +154,4 @@ object InjectProblem : Problem {
 
 private fun PsiElement.errors(msg: String): List<Problem.Error> {
     return mutableListOf(Problem.Error(this, msg))
-}
-
-private fun UMethod.getPresentableAnnotatedScopes(): String {
-    return psiAnnotations.mapNotNull {
-        val psiClass = it.psiClass()
-        if (psiClass?.isScope == true) "@${psiClass.name}" else null
-    }.joinToString(", ")
-}
-
-private fun UMethod.getPresentableAnnotatedQualifiers(): String {
-    return psiAnnotations.mapNotNull {
-        val psiClass = it.psiClass()
-        if (psiClass?.isQualifier == true) "@${psiClass.name}" else null
-    }.joinToString(", ")
-}
-
-private fun UClass.scopes(): List<String> {
-    return psiAnnotations.mapNotNull {
-        val psiClass = it.psiClass()
-        if (psiClass?.isScope == true) "@${psiClass.name}" else null
-    }
 }

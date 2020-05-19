@@ -93,3 +93,44 @@ val PsiClass.isQualifier: Boolean
 
 val UClass.isKotlinObject: Boolean
     get() = (this as? KotlinUClass)?.ktClass is KtObjectDeclaration
+
+fun UMethod.checkExceptionsThrown(): List<String> {
+    val classes = javaPsi.throwsList.referenceElements.mapNotNull {
+        it.resolve() as? PsiClass
+    }
+    return classes.filter { it.isCheckedException() }
+        .mapNotNull { it.name }
+}
+
+fun PsiClass.isCheckedException(): Boolean {
+    var parent: PsiClass? = this
+    while (parent != null) {
+        val name = parent.qualifiedName
+        if (name == "java.lang.RuntimeException" || name == "java.lang.Error") {
+            return false
+        } else if (name == "java.lang.Throwable") return true
+        parent = parent.superClass
+    }
+    return false
+}
+
+fun UMethod.scopes(): List<String> {
+    return psiAnnotations.mapNotNull {
+        val psiClass = it.psiClass()
+        if (psiClass?.isScope == true) "@${psiClass.name}" else null
+    }
+}
+
+fun UMethod.qualifiers(): List<String> {
+    return psiAnnotations.mapNotNull {
+        val psiClass = it.psiClass()
+        if (psiClass?.isQualifier == true) "@${psiClass.name}" else null
+    }
+}
+
+fun UClass.scopes(): List<String> {
+    return psiAnnotations.mapNotNull {
+        val psiClass = it.psiClass()
+        if (psiClass?.isScope == true) "@${psiClass.name}" else null
+    }
+}

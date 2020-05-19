@@ -2,6 +2,7 @@ package com.madrapps.dagger.validation.component
 
 import com.madrapps.dagger.utils.isComponentBuilder
 import com.madrapps.dagger.utils.isComponentFactory
+import com.madrapps.dagger.utils.presentable
 import com.madrapps.dagger.utils.psiIdentifier
 import com.madrapps.dagger.validation.Problem.Error
 import org.jetbrains.uast.UAnnotation
@@ -15,11 +16,11 @@ object MultipleBuilderOrFactory : ComponentProblem() {
             it.isComponentBuilder || it.isComponentFactory
         }
         if (buildersOrFactories.size > 1) {
-            val err = buildersOrFactories.map { it.javaPsi.name }.joinToString(", ")
+            val err = buildersOrFactories.mapNotNull { it.javaPsi.name }.presentable
             return listOf(
                 Error(
                     annotation.psiIdentifier,
-                    "@Component has more than one @Component.Builder or @Component.Factory [$err]"
+                    "@Component has more than one @Component.Builder or @Component.Factory $err"
                 )
             )
         }
