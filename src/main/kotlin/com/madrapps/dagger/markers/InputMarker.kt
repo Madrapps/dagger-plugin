@@ -27,7 +27,7 @@ private class SubscribeLineMarkerInfo(
     psiElement.textRange,
     AllIcons.Actions.Colors,
     null,
-    { event, element ->
+    { _, element ->
         ReadAction.nonBlocking {
             element.project.log("Line marker clicked")
         }.inSmartMode(element.project).submit(AppExecutorUtil.getAppExecutorService())
