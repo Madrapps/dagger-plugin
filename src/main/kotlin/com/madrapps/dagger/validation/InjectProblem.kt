@@ -3,6 +3,7 @@ package com.madrapps.dagger.validation
 import com.intellij.psi.PsiElement
 import com.madrapps.dagger.utils.*
 import org.jetbrains.kotlin.asJava.classes.isPrivateOrParameterInPrivateMethod
+import org.jetbrains.kotlin.psi.psiUtil.isTopLevelKtOrJavaMember
 import org.jetbrains.uast.*
 
 object InjectProblem : Problem {
@@ -26,7 +27,16 @@ object InjectProblem : Problem {
         errors += validateFinalField(field, range)
         errors += validatePrivateField(field, range)
         errors += validateStaticField(field, range)
+        errors += validatePrivateClass(field, range)
         return errors
+    }
+
+    private fun validatePrivateClass(declaration: UDeclaration, range: PsiElement): List<Problem.Error> {
+        val uClass = declaration.getContainingUClass() ?: return emptyList()
+        if (uClass.isPrivateOrParameterInPrivateMethod()) {
+            return range.errors("Dagger does not support injection into private classes")
+        }
+        return emptyList()
     }
 
     private fun validateMethod(method: UMethod, range: PsiElement): List<Problem.Error> {
@@ -39,6 +49,7 @@ object InjectProblem : Problem {
             errors += validateStaticMethod(method, range)
             errors += validateTypeParameter(method, range)
             errors += validateCheckExceptionMethod(method, range)
+            errors += validatePrivateClass(method, range)
             errors
         }
     }
@@ -71,6 +82,7 @@ object InjectProblem : Problem {
         errors += validateMultipleScope(method, range)
         errors += validateCheckExceptionConstructor(method, range)
         errors += validateInnerClass(method, range)
+        errors += validatePrivateClass(method, range)
         return errors
     }
 
