@@ -50,7 +50,16 @@ object InjectProblem : Problem {
         errors += validateIfSingleAnnotation(method, range)
         errors += validateMultipleScope(method, range)
         errors += validateCheckExceptionConstructor(method, range)
+        errors += validateInnerClass(method, range)
         return errors
+    }
+
+    private fun validateInnerClass(method: UMethod, range: PsiElement): List<Problem.Error> {
+        val uClass = method.getContainingUClass() ?: return emptyList()
+        if (uClass.isInner) {
+            return range.errors("@Inject constructors are invalid on inner classes. Did you mean to make the class static?")
+        }
+        return emptyList()
     }
 
     private fun validateCheckExceptionConstructor(method: UMethod, range: PsiElement): List<Problem.Error> {
@@ -150,8 +159,4 @@ object InjectProblem : Problem {
         }
         return emptyList()
     }
-}
-
-private fun PsiElement.errors(msg: String): List<Problem.Error> {
-    return mutableListOf(Problem.Error(this, msg))
 }

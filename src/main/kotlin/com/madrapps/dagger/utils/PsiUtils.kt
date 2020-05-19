@@ -21,6 +21,9 @@ private const val QUALIFIER = "javax.inject.Qualifier"
 val UClass.isAbstract: Boolean
     get() = PsiUtil.isAbstractClass(javaPsi)
 
+val UClass.isInner: Boolean
+    get() = PsiUtil.isInnerClass(javaPsi)
+
 val UMethod.isAbstract: Boolean
     get() = javaPsi.hasModifierProperty("abstract")
 

@@ -36,4 +36,8 @@ interface Problem {
     fun isError(element: PsiElement): List<Error>
 
     data class Error(val range: PsiElement, val message: String)
+
+    fun PsiElement.errors(msg: String): List<Error> {
+        return mutableListOf(Error(this, msg))
+    }
 }
