@@ -37,8 +37,16 @@ object InjectProblem : Problem {
             errors += validatePrivateMethod(method, range)
             errors += validateAbstractMethod(method, range)
             errors += validateStaticMethod(method, range)
+            errors += validateTypeParameter(method, range)
             errors
         }
+    }
+
+    private fun validateTypeParameter(method: UMethod, range: PsiElement): List<Problem.Error> {
+        if (method.javaPsi.typeParameters.isNotEmpty()) {
+            return range.errors("Methods with @Inject may not declare type parameters")
+        }
+        return emptyList()
     }
 
     private fun validateConstructor(method: UMethod, range: PsiElement): List<Problem.Error> {
