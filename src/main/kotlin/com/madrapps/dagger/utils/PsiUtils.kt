@@ -17,6 +17,7 @@ private const val MODULE = "dagger.Module"
 private const val INJECT = "javax.inject.Inject"
 private const val SCOPE = "javax.inject.Scope"
 private const val QUALIFIER = "javax.inject.Qualifier"
+private const val PROVIDES = "dagger.Provides"
 
 val UClass.isAbstract: Boolean
     get() = PsiUtil.isAbstractClass(javaPsi)
@@ -54,6 +55,9 @@ val UClass.isModule: Boolean
 
 val UAnnotation.isInject: Boolean
     get() = qualifiedName == INJECT
+
+val UAnnotation.isProvides: Boolean
+    get() = qualifiedName == PROVIDES
 
 val UAnnotation.isScope: Boolean
     get() = qualifiedName == SCOPE

@@ -2,7 +2,7 @@ package com.madrapps.dagger
 
 import com.madrapps.daggerprocessor.GenerateTest
 
-private const val subDirectory = "inject"
+private const val subDirectory = "provides"
 
 @GenerateTest(directory = subDirectory, exclude = ["assets"])
-abstract class InjectTestCase : BaseTestCase(subDirectory)
+abstract class ProvidesTestCase : BaseTestCase(subDirectory)
