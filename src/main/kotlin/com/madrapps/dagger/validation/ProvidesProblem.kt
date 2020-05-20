@@ -4,7 +4,6 @@ import com.intellij.psi.PsiElement
 import com.madrapps.dagger.utils.isModule
 import com.madrapps.dagger.utils.isProvides
 import com.madrapps.dagger.utils.psiIdentifier
-import com.madrapps.dagger.validation.InjectProblem.errors
 import org.jetbrains.uast.*
 
 object ProvidesProblem : Problem {
@@ -26,6 +25,7 @@ object ProvidesProblem : Problem {
         return mutableListOf<Problem.Error>().apply {
             this += validateModuleClass(method, range)
             this += method.validateTypeParameter(range, "@provides methods may not have type parameters")
+            this += method.validatePrivateMethod(range, "@provides methods cannot be private")
         }
     }
 
