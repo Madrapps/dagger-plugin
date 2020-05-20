@@ -38,7 +38,7 @@ object InjectProblem : Problem {
                 this += validatePrivateMethod(method, range)
                 this += validateAbstractMethod(method, range)
                 this += validateStaticMethod(method, range)
-                this += validateTypeParameter(method, range)
+                this += method.validateTypeParameter(range, "Methods with @Inject may not declare type parameters")
                 this += validateCheckExceptionMethod(method, range)
                 this += validatePrivateClass(method, range)
             }
@@ -73,12 +73,6 @@ object InjectProblem : Problem {
                 "Methods with @Inject may not throw checked exceptions ${checkedExceptions.presentable}. " +
                         "Please wrap your exceptions in a RuntimeException instead."
             )
-        } else emptyList()
-    }
-
-    private fun validateTypeParameter(method: UMethod, range: PsiElement): List<Problem.Error> {
-        return if (method.javaPsi.typeParameters.isNotEmpty()) {
-            range.errors("Methods with @Inject may not declare type parameters")
         } else emptyList()
     }
 
