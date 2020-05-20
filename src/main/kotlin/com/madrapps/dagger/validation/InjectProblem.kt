@@ -36,7 +36,7 @@ object InjectProblem : Problem {
         } else {
             mutableListOf<Problem.Error>().apply {
                 this += method.validatePrivateMethod(range, "Dagger does not support injection into private methods")
-                this += validateAbstractMethod(method, range)
+                this += method.validateAbstractMethod(range, "Methods with @Inject may not be abstract")
                 this += validateStaticMethod(method, range)
                 this += method.validateTypeParameter(range, "Methods with @Inject may not declare type parameters")
                 this += validateCheckExceptionMethod(method, range)
@@ -153,12 +153,6 @@ object InjectProblem : Problem {
     private fun validateStaticMethod(method: UMethod, range: PsiElement): List<Problem.Error> {
         return if (method.isStatic || method.getContainingUClass()?.isKotlinObject == true) {
             range.errors("Dagger does not support injection into static methods")
-        } else emptyList()
-    }
-
-    private fun validateAbstractMethod(method: UMethod, range: PsiElement): List<Problem.Error> {
-        return if (method.isAbstract) {
-            range.errors("Methods with @Inject may not be abstract")
         } else emptyList()
     }
 }

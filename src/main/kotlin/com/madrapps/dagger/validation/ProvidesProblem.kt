@@ -26,6 +26,7 @@ object ProvidesProblem : Problem {
             this += validateModuleClass(method, range)
             this += method.validateTypeParameter(range, "@provides methods may not have type parameters")
             this += method.validatePrivateMethod(range, "@provides methods cannot be private")
+            this += method.validateAbstractMethod(range, "@provides methods cannot be abstract")
         }
     }
 

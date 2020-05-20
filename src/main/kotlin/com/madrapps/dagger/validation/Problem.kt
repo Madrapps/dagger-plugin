@@ -1,6 +1,7 @@
 package com.madrapps.dagger.validation
 
 import com.intellij.psi.PsiElement
+import com.madrapps.dagger.utils.isAbstract
 import org.jetbrains.kotlin.asJava.classes.isPrivateOrParameterInPrivateMethod
 import org.jetbrains.uast.UMethod
 
@@ -20,6 +21,12 @@ fun UMethod.validateTypeParameter(range: PsiElement, error: String): List<Proble
 
 fun UMethod.validatePrivateMethod(range: PsiElement, error: String): List<Problem.Error> {
     return if (isPrivateOrParameterInPrivateMethod()) {
+        range.errors(error)
+    } else emptyList()
+}
+
+fun UMethod.validateAbstractMethod(range: PsiElement, error: String): List<Problem.Error> {
+    return if (isAbstract) {
         range.errors(error)
     } else emptyList()
 }
