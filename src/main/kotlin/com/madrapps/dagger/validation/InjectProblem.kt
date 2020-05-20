@@ -39,7 +39,8 @@ object InjectProblem : Problem {
                 this += method.validateAbstractMethod(range, "Methods with @Inject may not be abstract")
                 this += validateStaticMethod(method, range)
                 this += method.validateTypeParameter(range, "Methods with @Inject may not declare type parameters")
-                this += validateCheckExceptionMethod(method, range)
+                this += method.validateCheckedExceptionMethod(range, "Methods with @Inject may not throw checked exceptions %s. " +
+                        "Please wrap your exceptions in a RuntimeException instead.")
                 this += validatePrivateClass(method, range)
             }
         }
@@ -53,7 +54,7 @@ object InjectProblem : Problem {
             this += validateAbstractClass(method, range)
             this += validateIfSingleAnnotation(method, range)
             this += validateMultipleScope(method, range)
-            this += validateCheckExceptionConstructor(method, range)
+            this += method.validateCheckedExceptionMethod(range, "Dagger does not support checked exceptions %s on @Inject constructors")
             this += validateInnerClass(method, range)
             this += validatePrivateClass(method, range)
         }
@@ -66,27 +67,10 @@ object InjectProblem : Problem {
         } else emptyList()
     }
 
-    private fun validateCheckExceptionMethod(method: UMethod, range: PsiElement): List<Problem.Error> {
-        val checkedExceptions = method.checkExceptionsThrown()
-        return if (checkedExceptions.isNotEmpty()) {
-            range.errors(
-                "Methods with @Inject may not throw checked exceptions ${checkedExceptions.presentable}. " +
-                        "Please wrap your exceptions in a RuntimeException instead."
-            )
-        } else emptyList()
-    }
-
     private fun validateInnerClass(method: UMethod, range: PsiElement): List<Problem.Error> {
         val uClass = method.getContainingUClass() ?: return emptyList()
         return if (uClass.isInner) {
             range.errors("@Inject constructors are invalid on inner classes. Did you mean to make the class static?")
-        } else emptyList()
-    }
-
-    private fun validateCheckExceptionConstructor(method: UMethod, range: PsiElement): List<Problem.Error> {
-        val checkedExceptions = method.checkExceptionsThrown()
-        return if (checkedExceptions.isNotEmpty()) {
-            range.errors("Dagger does not support checked exceptions ${checkedExceptions.presentable} on @Inject constructors")
         } else emptyList()
     }
 

@@ -1,7 +1,9 @@
 package com.madrapps.dagger.validation
 
 import com.intellij.psi.PsiElement
+import com.madrapps.dagger.utils.checkExceptionsThrown
 import com.madrapps.dagger.utils.isAbstract
+import com.madrapps.dagger.utils.presentable
 import org.jetbrains.kotlin.asJava.classes.isPrivateOrParameterInPrivateMethod
 import org.jetbrains.uast.UMethod
 
@@ -28,5 +30,13 @@ fun UMethod.validatePrivateMethod(range: PsiElement, error: String): List<Proble
 fun UMethod.validateAbstractMethod(range: PsiElement, error: String): List<Problem.Error> {
     return if (isAbstract) {
         range.errors(error)
+    } else emptyList()
+}
+
+fun UMethod.validateCheckedExceptionMethod(range: PsiElement, error: String): List<Problem.Error> {
+    val checkedExceptions = checkExceptionsThrown()
+    return if (checkedExceptions.isNotEmpty()) {
+        val msg = String.format(error, checkedExceptions.presentable)
+        range.errors(msg)
     } else emptyList()
 }

@@ -27,6 +27,7 @@ object ProvidesProblem : Problem {
             this += method.validateTypeParameter(range, "@provides methods may not have type parameters")
             this += method.validatePrivateMethod(range, "@provides methods cannot be private")
             this += method.validateAbstractMethod(range, "@provides methods cannot be abstract")
+            this += method.validateCheckedExceptionMethod(range, "@provides methods may only throw unchecked exceptions. %s not allowed")
         }
     }
 
