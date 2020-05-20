@@ -28,6 +28,7 @@ object ProvidesProblem : Problem {
             this += method.validatePrivateMethod(range, "@provides methods cannot be private")
             this += method.validateAbstractMethod(range, "@provides methods cannot be abstract")
             this += method.validateCheckedExceptionMethod(range, "@provides methods may only throw unchecked exceptions. %s not allowed")
+            this += method.validateMultipleScope(range, "@provides methods cannot use more than one @scope %s")
         }
     }
 

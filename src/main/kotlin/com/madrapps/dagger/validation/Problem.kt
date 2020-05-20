@@ -4,8 +4,10 @@ import com.intellij.psi.PsiElement
 import com.madrapps.dagger.utils.checkExceptionsThrown
 import com.madrapps.dagger.utils.isAbstract
 import com.madrapps.dagger.utils.presentable
+import com.madrapps.dagger.utils.scopes
 import org.jetbrains.kotlin.asJava.classes.isPrivateOrParameterInPrivateMethod
 import org.jetbrains.uast.UMethod
+import org.jetbrains.uast.getContainingUClass
 
 interface Problem {
     fun isError(element: PsiElement): List<Error>
@@ -38,5 +40,12 @@ fun UMethod.validateCheckedExceptionMethod(range: PsiElement, error: String): Li
     return if (checkedExceptions.isNotEmpty()) {
         val msg = String.format(error, checkedExceptions.presentable)
         range.errors(msg)
+    } else emptyList()
+}
+
+fun UMethod.validateMultipleScope(range: PsiElement, error: String): List<Problem.Error> {
+    val scopes = scopes()
+    return if (scopes.size > 1) {
+        range.errors(String.format(error, scopes.presentable))
     } else emptyList()
 }
