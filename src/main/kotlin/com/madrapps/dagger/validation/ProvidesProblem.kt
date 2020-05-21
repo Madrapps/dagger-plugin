@@ -30,6 +30,7 @@ object ProvidesProblem : Problem {
             this += method.validateCheckedExceptionMethod(range, "@provides methods may only throw unchecked exceptions. %s not allowed")
             this += method.validateMultipleScope(range, "@provides methods cannot use more than one @scope %s")
             this += method.validateMultipleQualifier(range, "@provides methods may not use more than one @qualifier %s")
+            this += method.validateVoidReturn(range, "@provides methods must return a value (not void)")
         }
     }
 

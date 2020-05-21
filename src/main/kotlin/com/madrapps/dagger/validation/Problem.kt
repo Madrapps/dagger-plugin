@@ -52,3 +52,9 @@ fun UMethod.validateMultipleQualifier(range: PsiElement, error: String): List<Pr
         range.errors(String.format(error, qualifiers.presentable))
     } else emptyList()
 }
+
+fun UMethod.validateVoidReturn(range: PsiElement, error: String): List<Problem.Error> {
+    return if (returnType?.canonicalText == "void") {
+        range.errors(error)
+    } else emptyList()
+}
