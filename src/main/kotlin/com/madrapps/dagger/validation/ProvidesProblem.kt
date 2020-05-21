@@ -31,6 +31,7 @@ object ProvidesProblem : Problem {
             this += method.validateMultipleScope(range, "@provides methods cannot use more than one @scope %s")
             this += method.validateMultipleQualifier(range, "@provides methods may not use more than one @qualifier %s")
             this += method.validateVoidReturn(range, "@provides methods must return a value (not void)")
+            this += method.validateFrameworkTypesReturn(range, "@provides methods must not return framework types %s")
         }
     }
 

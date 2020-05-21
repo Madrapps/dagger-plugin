@@ -1,6 +1,7 @@
 package com.madrapps.dagger.validation
 
 import com.intellij.psi.PsiElement
+import com.intellij.psi.impl.source.PsiClassReferenceType
 import com.madrapps.dagger.utils.*
 import org.jetbrains.kotlin.asJava.classes.isPrivateOrParameterInPrivateMethod
 import org.jetbrains.uast.UMethod
@@ -12,6 +13,8 @@ interface Problem {
 }
 
 fun PsiElement.errors(msg: String) = mutableListOf(Problem.Error(this, msg))
+
+private val frameworkTypes = listOf("dagger.Lazy", "dagger.MembersInjector", "javax.inject.Provider")
 
 fun UMethod.validateTypeParameter(range: PsiElement, error: String): List<Problem.Error> {
     return if (javaPsi.typeParameters.isNotEmpty()) {
@@ -56,5 +59,13 @@ fun UMethod.validateMultipleQualifier(range: PsiElement, error: String): List<Pr
 fun UMethod.validateVoidReturn(range: PsiElement, error: String): List<Problem.Error> {
     return if (returnType?.canonicalText == "void") {
         range.errors(error)
+    } else emptyList()
+}
+
+fun UMethod.validateFrameworkTypesReturn(range: PsiElement, error: String): List<Problem.Error> {
+    val psiClass = (returnType as? PsiClassReferenceType)?.resolve() ?: return emptyList()
+    val qualifiedName = psiClass.qualifiedName
+    return if (qualifiedName in frameworkTypes) {
+        range.errors(String.format(error, "[${psiClass.name}]"))
     } else emptyList()
 }
