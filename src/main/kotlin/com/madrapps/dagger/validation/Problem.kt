@@ -1,13 +1,9 @@
 package com.madrapps.dagger.validation
 
 import com.intellij.psi.PsiElement
-import com.madrapps.dagger.utils.checkExceptionsThrown
-import com.madrapps.dagger.utils.isAbstract
-import com.madrapps.dagger.utils.presentable
-import com.madrapps.dagger.utils.scopes
+import com.madrapps.dagger.utils.*
 import org.jetbrains.kotlin.asJava.classes.isPrivateOrParameterInPrivateMethod
 import org.jetbrains.uast.UMethod
-import org.jetbrains.uast.getContainingUClass
 
 interface Problem {
     fun isError(element: PsiElement): List<Error>
@@ -47,5 +43,12 @@ fun UMethod.validateMultipleScope(range: PsiElement, error: String): List<Proble
     val scopes = scopes()
     return if (scopes.size > 1) {
         range.errors(String.format(error, scopes.presentable))
+    } else emptyList()
+}
+
+fun UMethod.validateMultipleQualifier(range: PsiElement, error: String): List<Problem.Error> {
+    val qualifiers = qualifiers()
+    return if (qualifiers.size > 1) {
+        range.errors(String.format(error, qualifiers.presentable))
     } else emptyList()
 }
