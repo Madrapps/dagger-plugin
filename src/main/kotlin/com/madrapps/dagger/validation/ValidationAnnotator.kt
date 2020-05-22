@@ -15,7 +15,8 @@ class ValidationAnnotator : Annotator {
         NoModuleAnnotation,
         MultipleBuilderOrFactory,
         InjectProblem,
-        ProvidesProblem
+        ProvidesProblem,
+        BindsProblem
     )
 
     override fun annotate(element: PsiElement, holder: AnnotationHolder) {

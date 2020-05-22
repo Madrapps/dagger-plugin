@@ -5,6 +5,7 @@ import com.intellij.psi.impl.source.PsiClassReferenceType
 import com.madrapps.dagger.utils.*
 import org.jetbrains.kotlin.asJava.classes.isPrivateOrParameterInPrivateMethod
 import org.jetbrains.uast.UMethod
+import org.jetbrains.uast.getContainingUClass
 
 interface Problem {
     fun isError(element: PsiElement): List<Error>
@@ -67,5 +68,12 @@ fun UMethod.validateFrameworkTypesReturn(range: PsiElement, error: String): List
     val qualifiedName = psiClass.qualifiedName
     return if (qualifiedName in frameworkTypes) {
         range.errors(String.format(error, "[${psiClass.name}]"))
+    } else emptyList()
+}
+
+fun UMethod.validateModuleClass(range: PsiElement, error: String): List<Problem.Error> {
+    val uClass = getContainingUClass() ?: return emptyList()
+    return if (!uClass.isModule) {
+        range.errors(error)
     } else emptyList()
 }
