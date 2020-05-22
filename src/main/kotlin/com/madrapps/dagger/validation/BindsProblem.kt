@@ -28,6 +28,7 @@ object BindsProblem : Problem {
             this += method.validateModuleClass(
                 range, "@Binds methods can only be present within a @module or @ProducerModule"
             )
+            this += method.validateTypeParameter(range, "@Binds methods may not have type parameters")
         }
     }
 }
