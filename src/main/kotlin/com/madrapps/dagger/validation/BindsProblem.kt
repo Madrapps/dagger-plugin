@@ -35,6 +35,7 @@ object BindsProblem : Problem {
                 this += method.validatePrivateMethod(range, "@Binds methods cannot be private")
             }
             this += isAbstractErrors
+            this += method.validateCheckedExceptionMethod(range, "@Binds methods may only throw unchecked exceptions. %s not allowed")
         }
     }
 }
