@@ -58,14 +58,7 @@ compileTestKotlin {
 
 patchPluginXml {
     changeNotes """
-    - Toggle the option to Generate dagger graph everytime the project is built <br/>
-    - Show dagger validation errors in the editor (beta) <br/>
-        <ul>
-            <li>@Component may only be applied to an interface or abstract class</li>
-            <li>@Component has more than one @Component.Builder or @Component.Factory </li>
-            <li>Given module is not annotated with @Module</li>
-            <li>Dagger does not support injection into private constructors/methods/fields</li>
-        </ul>
+    - Show basic dagger validation errors in the editor for @Inject, @Binds and @Provides <br/>
 """
 }
 

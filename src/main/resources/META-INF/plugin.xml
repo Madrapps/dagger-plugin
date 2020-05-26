@@ -10,6 +10,7 @@
             <li>View the dependency graph in tree format</li>
             <li>Jump to source code from the graph</li>
             <li>View parents and children of a node in the graph</li>
+            <li>View basic validation errors directly in the editor</li>
             <li>Fully supported for project using both Java and Kotlin including Android</li>
         </ul>
     <p>Usage</p>

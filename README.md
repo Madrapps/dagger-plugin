@@ -14,6 +14,7 @@ Features
 - View the dependency graph in tree format
 - Jump to source code from the graph
 - View parents and children of a node in the graph
+- View basic validation errors directly in the editor
 - Fully supported for project using both Java and Kotlin including Android
 
 Usage
