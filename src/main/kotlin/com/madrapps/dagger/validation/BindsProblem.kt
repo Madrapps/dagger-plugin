@@ -38,6 +38,7 @@ object BindsProblem : Problem {
             this += method.validateCheckedExceptionMethod(range, "@Binds methods may only throw unchecked exceptions. %s not allowed")
             this += method.validateMultipleScope(range, "@Binds methods cannot use more than one @Scope %s")
             this += method.validateMultipleQualifier(range, "@Binds methods may not use more than one @Qualifier %s")
+            this += method.validateVoidReturn(range, "@Binds methods must return a value (not void)")
         }
     }
 }
