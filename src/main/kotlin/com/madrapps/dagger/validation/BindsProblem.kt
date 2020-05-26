@@ -29,6 +29,7 @@ object BindsProblem : Problem {
                 range, "@Binds methods can only be present within a @module or @ProducerModule"
             )
             this += method.validateTypeParameter(range, "@Binds methods may not have type parameters")
+            this += method.validatePrivateMethod(range, "@Binds methods cannot be private")
         }
     }
 }
