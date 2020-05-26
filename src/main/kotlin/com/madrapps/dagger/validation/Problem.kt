@@ -35,6 +35,12 @@ fun UMethod.validateAbstractMethod(range: PsiElement, error: String): List<Probl
     } else emptyList()
 }
 
+fun UMethod.validateMustBeAbstractMethod(range: PsiElement, error: String): List<Problem.Error> {
+    return if (!isAbstract) {
+        range.errors(error)
+    } else emptyList()
+}
+
 fun UMethod.validateCheckedExceptionMethod(range: PsiElement, error: String): List<Problem.Error> {
     val checkedExceptions = checkExceptionsThrown()
     return if (checkedExceptions.isNotEmpty()) {

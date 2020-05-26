@@ -4,10 +4,10 @@ import assets.Car;
 import assets.CarImpl;
 
 @Module
-public abstract class PrivateMethod {
+public abstract class ConcreteMethod {
 
     @<error descr="@Binds methods needs to be abstract">Binds</error>
-    private Car getCar(CarImpl car) {
+    public Car getCar(CarImpl car) {
         return null;
     }
 }

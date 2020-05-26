@@ -6,10 +6,10 @@ import assets.CarImpl
 
 
 @Module
-abstract class KPrivateMethod {
+abstract class KConcreteMethod {
 
     @<error descr="@Binds methods needs to be abstract">Binds</error>
-    private fun getCar(car: CarImpl) : Car? {
+    fun getCar(car: CarImpl) : Car? {
         return null
     }
 }

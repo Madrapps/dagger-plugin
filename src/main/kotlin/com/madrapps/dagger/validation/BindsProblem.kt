@@ -29,7 +29,12 @@ object BindsProblem : Problem {
                 range, "@Binds methods can only be present within a @module or @ProducerModule"
             )
             this += method.validateTypeParameter(range, "@Binds methods may not have type parameters")
-            this += method.validatePrivateMethod(range, "@Binds methods cannot be private")
+            val isAbstractErrors =
+                method.validateMustBeAbstractMethod(range, "@Binds methods needs to be abstract")
+            if (isAbstractErrors.isEmpty()) {
+                this += method.validatePrivateMethod(range, "@Binds methods cannot be private")
+            }
+            this += isAbstractErrors
         }
     }
 }
