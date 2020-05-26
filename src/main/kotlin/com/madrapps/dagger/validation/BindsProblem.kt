@@ -36,6 +36,7 @@ object BindsProblem : Problem {
             }
             this += isAbstractErrors
             this += method.validateCheckedExceptionMethod(range, "@Binds methods may only throw unchecked exceptions. %s not allowed")
+            this += method.validateMultipleScope(range, "@Binds methods cannot use more than one @scope %s")
         }
     }
 }
