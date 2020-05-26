@@ -6,6 +6,6 @@ import assets.CarImpl
 
 abstract class KNonModuleClass {
 
-    @<error descr="@Binds methods can only be present within a @module or @ProducerModule">Binds</error>
+    @<error descr="@Binds methods can only be present within a @Module or @ProducerModule">Binds</error>
     abstract fun getCar(car: CarImpl) : Car
 }

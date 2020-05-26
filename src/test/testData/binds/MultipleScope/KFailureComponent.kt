@@ -12,6 +12,6 @@ abstract class KMultipleScope {
 
     @PrimaryScope
     @Singleton
-    @<error descr="@Binds methods cannot use more than one @scope [@PrimaryScope, @Singleton]">Binds</error>
+    @<error descr="@Binds methods cannot use more than one @Scope [@PrimaryScope, @Singleton]">Binds</error>
     abstract fun getCar(car: CarImpl): Car
 }

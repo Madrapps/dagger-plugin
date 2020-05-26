@@ -12,7 +12,7 @@ class KMultipleQualifier {
 
     @PrimaryQualifier
     @Named
-    @<error descr="@provides methods may not use more than one @qualifier [@PrimaryQualifier, @Named]">Provides</error>
+    @<error descr="@Provides methods may not use more than one @Qualifier [@PrimaryQualifier, @Named]">Provides</error>
     fun getCar() : Car {
         return Car()
     }

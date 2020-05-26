@@ -10,7 +10,7 @@ public class MultipleScope {
 
     @PrimaryScope
     @Singleton
-    @<error descr="@provides methods cannot use more than one @scope [@PrimaryScope, @Singleton]">Provides</error>
+    @<error descr="@Provides methods cannot use more than one @Scope [@PrimaryScope, @Singleton]">Provides</error>
     public Car getCar() {
         return new Car();
     }

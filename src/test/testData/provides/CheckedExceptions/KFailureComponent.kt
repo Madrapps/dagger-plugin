@@ -11,7 +11,7 @@ import java.lang.Error
 class KException {
 
     @Throws(Exception::class)
-    @<error descr="@provides methods may only throw unchecked exceptions. [Exception] not allowed">Provides</error>
+    @<error descr="@Provides methods may only throw unchecked exceptions. [Exception] not allowed">Provides</error>
     fun getCar() : Car {
         return Car()
     }
@@ -21,7 +21,7 @@ class KException {
 class KIOException {
 
     @Throws(IOException::class)
-    @<error descr="@provides methods may only throw unchecked exceptions. [IOException] not allowed">Provides</error>
+    @<error descr="@Provides methods may only throw unchecked exceptions. [IOException] not allowed">Provides</error>
     fun getCar() : Car {
         return Car()
     }
@@ -31,7 +31,7 @@ class KIOException {
 class KMultipleCheckedException {
 
     @Throws(Error::class, Exception::class, IOException::class)
-    @<error descr="@provides methods may only throw unchecked exceptions. [Exception, IOException] not allowed">Provides</error>
+    @<error descr="@Provides methods may only throw unchecked exceptions. [Exception, IOException] not allowed">Provides</error>
     fun getCar() : Car {
         return Car()
     }

@@ -12,6 +12,6 @@ public abstract class MultipleScope {
 
     @PrimaryScope
     @Singleton
-    @<error descr="@Binds methods cannot use more than one @scope [@PrimaryScope, @Singleton]">Binds</error>
+    @<error descr="@Binds methods cannot use more than one @Scope [@PrimaryScope, @Singleton]">Binds</error>
     public abstract Car getCar(CarImpl car);
 }

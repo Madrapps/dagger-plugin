@@ -6,6 +6,6 @@ import assets.Car
 @Module
 abstract class KAbstractMethod {
 
-    @<error descr="@provides methods cannot be abstract">Provides</error>
+    @<error descr="@Provides methods cannot be abstract">Provides</error>
     abstract fun getCar() : Car
 }

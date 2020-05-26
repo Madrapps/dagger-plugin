@@ -6,7 +6,7 @@ import assets.Car
 @Module
 class KPrivateMethod {
 
-    @<error descr="@provides methods cannot be private">Provides</error>
+    @<error descr="@Provides methods cannot be private">Provides</error>
     private fun getCar() : Car {
         return Car()
     }

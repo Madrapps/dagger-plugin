@@ -26,7 +26,7 @@ object BindsProblem : Problem {
     private fun validateMethod(method: UMethod, range: PsiElement): List<Problem.Error> {
         return mutableListOf<Problem.Error>().apply {
             this += method.validateModuleClass(
-                range, "@Binds methods can only be present within a @module or @ProducerModule"
+                range, "@Binds methods can only be present within a @Module or @ProducerModule"
             )
             this += method.validateTypeParameter(range, "@Binds methods may not have type parameters")
             val isAbstractErrors =
@@ -36,7 +36,7 @@ object BindsProblem : Problem {
             }
             this += isAbstractErrors
             this += method.validateCheckedExceptionMethod(range, "@Binds methods may only throw unchecked exceptions. %s not allowed")
-            this += method.validateMultipleScope(range, "@Binds methods cannot use more than one @scope %s")
+            this += method.validateMultipleScope(range, "@Binds methods cannot use more than one @Scope %s")
         }
     }
 }

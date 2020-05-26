@@ -5,6 +5,6 @@ import assets.CarImpl;
 
 public abstract class NonModuleClass {
 
-    @<error descr="@Binds methods can only be present within a @module or @ProducerModule">Binds</error>
+    @<error descr="@Binds methods can only be present within a @Module or @ProducerModule">Binds</error>
     public abstract Car getCar(CarImpl car);
 }

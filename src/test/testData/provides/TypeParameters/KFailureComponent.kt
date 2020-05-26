@@ -6,7 +6,7 @@ import assets.Car
 @Module
 class KWithTypeParameter {
 
-    @<error descr="@provides methods may not have type parameters">Provides</error>
+    @<error descr="@Provides methods may not have type parameters">Provides</error>
     fun <T> getCar() : Car {
         return Car()
     }

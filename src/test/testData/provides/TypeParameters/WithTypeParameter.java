@@ -5,7 +5,7 @@ import assets.Car;
 @Module
 public class WithTypeParameter {
 
-    @<error descr="@provides methods may not have type parameters">Provides</error>
+    @<error descr="@Provides methods may not have type parameters">Provides</error>
     public <T> Car getCar() {
         return new Car();
     }

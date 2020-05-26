@@ -12,7 +12,7 @@ public class MultipleQualifier {
 
     @PrimaryQualifier
     @Named
-    @<error descr="@provides methods may not use more than one @qualifier [@PrimaryQualifier, @Named]">Provides</error>
+    @<error descr="@Provides methods may not use more than one @Qualifier [@PrimaryQualifier, @Named]">Provides</error>
     public Car getCar() {
         return new Car();
     }
