@@ -31,12 +31,13 @@ object BindsProblem : Problem {
             this += method.validateTypeParameter(range, "@Binds methods may not have type parameters")
             val isAbstractErrors =
                 method.validateMustBeAbstractMethod(range, "@Binds methods needs to be abstract")
+            this += isAbstractErrors
             if (isAbstractErrors.isEmpty()) {
                 this += method.validatePrivateMethod(range, "@Binds methods cannot be private")
             }
-            this += isAbstractErrors
             this += method.validateCheckedExceptionMethod(range, "@Binds methods may only throw unchecked exceptions. %s not allowed")
             this += method.validateMultipleScope(range, "@Binds methods cannot use more than one @Scope %s")
+            this += method.validateMultipleQualifier(range, "@Binds methods may not use more than one @Qualifier %s")
         }
     }
 }
