@@ -39,6 +39,7 @@ object BindsProblem : Problem {
             this += method.validateMultipleScope(range, "@Binds methods cannot use more than one @Scope %s")
             this += method.validateMultipleQualifier(range, "@Binds methods may not use more than one @Qualifier %s")
             this += method.validateVoidReturn(range, "@Binds methods must return a value (not void)")
+            this += method.validateFrameworkTypesReturn(range, "@Binds methods must not return framework types %s")
         }
     }
 }
