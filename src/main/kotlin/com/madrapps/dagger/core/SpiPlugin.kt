@@ -2,7 +2,10 @@ package com.madrapps.dagger.core
 
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
+import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiMethod
+import com.intellij.psi.PsiParameter
 import com.madrapps.dagger.services.log
 import com.madrapps.dagger.services.service
 import com.madrapps.dagger.utils.*
@@ -117,15 +120,15 @@ class SpiPlugin(private val project: Project) : BindingGraphPlugin {
         when (element) {
             is TypeElement -> {
                 psiElement = element.toPsiClass(project)!!
-                name = requestElement().orNull()?.name() ?: psiElement.name ?: element.simpleName.toString()
+                name = requestElement().orNull()?.name() ?: (psiElement as PsiClass).name ?: element.simpleName.toString()
             }
             is VariableElement -> {
                 psiElement = element.toPsiParameter(project)!!
-                name = requestElement().orNull()?.name() ?: psiElement.type.presentableText
+                name = requestElement().orNull()?.name() ?: (psiElement as PsiParameter).type.presentableText
             }
             is ExecutableElement -> {
                 psiElement = element.toPsiMethod(project)!!
-                var temp = requestElement().orNull()?.name() ?: if (psiElement.isConstructor) {
+                var temp = requestElement().orNull()?.name() ?: if ((psiElement as PsiMethod).isConstructor) {
                     psiElement.name
                 } else {
                     psiElement.returnType?.presentableText ?: "NULL"
