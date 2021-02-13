@@ -67,14 +67,6 @@ fun VirtualFile.toFileIfExists(): File? {
     return if (file.exists()) file else null
 }
 
-fun Element.getClass(): Symbol.ClassSymbol {
-    var parent = enclosingElement
-    while (parent !is Symbol.ClassSymbol) {
-        parent = parent.enclosingElement
-    }
-    return parent
-}
-
 fun Symbol.VarSymbol.getMethod(): Symbol.MethodSymbol {
     var parent = enclosingElement
     while (parent !is Symbol.MethodSymbol) {
@@ -109,34 +101,6 @@ fun VariableElement.getMethod(): ExecutableElement {
 
 fun VariableElement.toPsiParameter(project: Project): PsiParameter? {
     val method = getMethod()
-
-    return null
-}
-
-fun ExecutableElement.toPsiMethod(project: Project): PsiClass? {
-
-    return null
-}
-
-fun Symbol.MethodSymbol.toPsiMethod(project: Project): PsiMethod? {
-    val psiManager = PsiManager.getInstance(project)
-    val psiClass = this.getClass().toPsiClass(project)
-    if (psiClass != null) {
-        var isConstructor = false
-        val methodName = if (name.toString() == "<init>") {
-            isConstructor = true
-            psiClass.name
-        } else {
-            name.toString()
-        }
-        val patternMethod = LightMethodBuilder(psiManager, methodName)
-            .setMethodReturnType(returnType.toString())
-            .setConstructor(isConstructor)
-        params().forEach {
-            patternMethod.addParameter(it.name.toString(), it.type.toString())
-        }
-        return psiClass.findMethodBySignature(patternMethod, false)
-    }
     return null
 }
 
@@ -149,12 +113,46 @@ fun Element.toPsiElement(project: Project): PsiElement? {
     }
 }
 
+fun ExecutableElement.toPsiMethod(project: Project): PsiMethod? {
+    val psiManager = PsiManager.getInstance(project)
+    val psiClass = this.getClass().toPsiClass(project)
+    if (psiClass != null) {
+        var isConstructor = false
+        val methodName = if (simpleName.toString() == "<init>") {
+            isConstructor = true
+            psiClass.name
+        } else {
+            simpleName.toString()
+        }
+        val patternMethod = LightMethodBuilder(psiManager, methodName)
+            .setMethodReturnType(returnType.toString())
+            .setConstructor(isConstructor)
+        parameters.forEach {
+            patternMethod.addParameter(it.simpleName.toString(), it.asType().toString())
+        }
+        return psiClass.findMethodBySignature(patternMethod, false)
+    }
+    return null
+}
+
+fun Symbol.MethodSymbol.toPsiMethod(project: Project): PsiMethod? {
+    return (this as ExecutableElement).toPsiMethod(project)
+}
+
 fun TypeElement.toPsiClass(project: Project): PsiClass? {
     return ClassUtil.findPsiClass(PsiManager.getInstance(project), qualifiedName.toString())
 }
 
 fun Symbol.ClassSymbol.toPsiClass(project: Project): PsiClass? {
     return (this as TypeElement).toPsiClass(project)
+}
+
+fun Element.getClass(): TypeElement {
+    var parent = enclosingElement
+    while (parent !is TypeElement) {
+        parent = parent.enclosingElement
+    }
+    return parent
 }
 
 fun DependencyRequest.sourceMethod(): String? {
