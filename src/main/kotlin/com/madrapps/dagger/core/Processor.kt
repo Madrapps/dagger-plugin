@@ -59,7 +59,7 @@ class Processor {
             Bundle(classes, classpath, outputDirectory)
         }.filter { it.classes.isNotEmpty() }
         project.log("Processor - Bundle:${map}")
-        val taskManager = project.getComponent(TaskManager::class.java)
+        val taskManager = project.getService(TaskManager::class.java)
         project.log("Processor - taskManager:${taskManager}")
         if (taskManager != null) {
             val task: Task.Backgroundable =
