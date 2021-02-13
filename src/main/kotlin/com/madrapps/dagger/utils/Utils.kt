@@ -67,15 +67,11 @@ fun VirtualFile.toFileIfExists(): File? {
     return if (file.exists()) file else null
 }
 
-fun Symbol.VarSymbol.getMethod(): Symbol.MethodSymbol {
-    var parent = enclosingElement
-    while (parent !is Symbol.MethodSymbol) {
-        parent = parent.enclosingElement
-    }
-    return parent
+fun Symbol.VarSymbol.toPsiParameter(project: Project): PsiParameter? {
+    return (this as VariableElement).toPsiParameter(project)
 }
 
-fun Symbol.VarSymbol.toPsiParameter(project: Project): PsiParameter? {
+fun VariableElement.toPsiParameter(project: Project): PsiParameter? {
     val method = getMethod()
     val psiMethod = method.toPsiMethod(project)
     if (psiMethod != null) {
@@ -88,19 +84,6 @@ fun Symbol.VarSymbol.toPsiParameter(project: Project): PsiParameter? {
             parameters.find { it.name == param }
         }
     }
-    return null
-}
-
-fun VariableElement.getMethod(): ExecutableElement {
-    var parent = enclosingElement
-    while (parent !is ExecutableElement) {
-        parent = parent.enclosingElement
-    }
-    return parent
-}
-
-fun VariableElement.toPsiParameter(project: Project): PsiParameter? {
-    val method = getMethod()
     return null
 }
 
@@ -150,6 +133,14 @@ fun Symbol.ClassSymbol.toPsiClass(project: Project): PsiClass? {
 fun Element.getClass(): TypeElement {
     var parent = enclosingElement
     while (parent !is TypeElement) {
+        parent = parent.enclosingElement
+    }
+    return parent
+}
+
+fun VariableElement.getMethod(): ExecutableElement {
+    var parent = enclosingElement
+    while (parent !is ExecutableElement) {
         parent = parent.enclosingElement
     }
     return parent
