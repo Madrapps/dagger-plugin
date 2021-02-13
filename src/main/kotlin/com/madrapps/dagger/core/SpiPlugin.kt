@@ -7,9 +7,6 @@ import com.madrapps.dagger.services.log
 import com.madrapps.dagger.services.service
 import com.madrapps.dagger.utils.*
 import com.madrapps.dagger.utils.name
-import com.sun.tools.javac.code.Attribute
-import com.sun.tools.javac.code.Symbol
-import com.sun.tools.javac.code.Type
 import dagger.MapKey
 import dagger.model.Binding
 import dagger.model.BindingGraph
@@ -22,10 +19,7 @@ import dagger.multibindings.StringKey
 import dagger.spi.BindingGraphPlugin
 import dagger.spi.DiagnosticReporter
 import javax.inject.Qualifier
-import javax.lang.model.element.Element
-import javax.lang.model.element.ExecutableElement
-import javax.lang.model.element.TypeElement
-import javax.lang.model.element.VariableElement
+import javax.lang.model.element.*
 import javax.lang.model.type.DeclaredType
 import javax.swing.tree.DefaultMutableTreeNode
 
@@ -84,9 +78,9 @@ class SpiPlugin(private val project: Project) : BindingGraphPlugin {
         var currentNode = parentNode
         val binding = bindingGraph.bindings(key).first()
         if (binding.kind().isMultibinding) {
-            val classType = dr.key().type() as? Type.ClassType
+            val classType = dr.key().type() as? DeclaredType
             if (classType != null) {
-                val name = (classType as DeclaredType).presentableName()
+                val name = classType.presentableName()
                 val psiElement = dr.requestElement().orNull()?.toPsiElement(project)!!
                 currentNode = createNode(
                     name,
@@ -132,38 +126,53 @@ class SpiPlugin(private val project: Project) : BindingGraphPlugin {
         val name: String
         val psiElement: PsiElement
         when (element) {
-            is Symbol.ClassSymbol -> {
-                psiElement = (element as TypeElement).toPsiClass(project)!!
+            is TypeElement -> {
+                psiElement = element.toPsiClass(project)!!
                 name = requestElement().orNull()?.name() ?: psiElement.name ?: element.simpleName.toString()
             }
-            is Symbol.VarSymbol -> {
-                psiElement = (element as VariableElement).toPsiParameter(project)!!
+            is VariableElement -> {
+                psiElement = element.toPsiParameter(project)!!
                 name = requestElement().orNull()?.name() ?: psiElement.type.presentableText
             }
-            is Symbol.MethodSymbol -> {
-                psiElement = (element as ExecutableElement).toPsiMethod(project)!!
+            is ExecutableElement -> {
+                psiElement = element.toPsiMethod(project)!!
                 var temp = requestElement().orNull()?.name() ?: if (psiElement.isConstructor) {
                     psiElement.name
                 } else {
                     psiElement.returnType?.presentableText ?: "NULL"
                 }
                 if (parentBinding?.kind() == BindingKind.MULTIBOUND_MAP) {
-                    val snd = element.annotationMirrors.find {
-                        keys.contains((it.annotationType as Type.ClassType).tsym.qualifiedName.toString()) ||
-                                it.type.tsym.annotationMirrors.find { (it.annotationType as Type.ClassType).tsym.qualifiedName.toString() == MapKey::class.java.name } != null
-                    }?.values?.first()?.snd
-                    val sndText = when (snd) {
-                        is Attribute.Enum -> "${snd.type.tsym.simpleName}.${snd.value.simpleName}"
-                        is Attribute.Class -> snd.classType.tsym.simpleName
-                        else -> snd.toString()
+                    val find = element.annotationMirrors.find {
+                        val did = it as AnnotationMirror
+                        val a =
+                            ((did.annotationType as DeclaredType).asElement() as TypeElement).qualifiedName.toString()
+                        val b =
+                            (did.annotationType as DeclaredType).asElement().annotationMirrors.find {
+                                val dod = it as AnnotationMirror
+                                ((dod.annotationType as DeclaredType).asElement() as TypeElement).qualifiedName.toString() == MapKey::class.java.name
+                            } != null
+                        keys.contains(a) || b
                     }
+                    val snd = find?.elementValues?.values?.first()
+                    val sndText = if (snd != null) {
+                        val value = snd.value
+                        when (value) {
+                            is VariableElement -> "${(value.asType() as DeclaredType).asElement().simpleName}.${value.simpleName}"
+                            is DeclaredType -> value.asElement().simpleName.toString()
+                            else -> value.toString()
+                        }
+                    } else "Object"
                     temp += " [$sndText]"
                 }
                 val snd = element.annotationMirrors.find {
-                    it.type.tsym.annotationMirrors.find { (it.annotationType as Type.ClassType).tsym.qualifiedName.toString() == Qualifier::class.java.name } != null
+                    val did = it as AnnotationMirror
+                    (did.annotationType as DeclaredType).asElement().annotationMirrors.find {
+                        val dod = it as AnnotationMirror
+                        ((dod.annotationType as DeclaredType).asElement() as TypeElement).qualifiedName.toString() == Qualifier::class.java.name
+                    } != null
                 }
                 if (snd != null) {
-                    temp += "[${snd.type.tsym.simpleName}]"
+                    temp += "[${snd.annotationType.asElement().simpleName}]"
                 }
                 name = temp
             }
