@@ -19,6 +19,7 @@ import javax.lang.model.element.Element
 import javax.lang.model.element.ExecutableElement
 import javax.lang.model.element.VariableElement
 import javax.lang.model.type.DeclaredType
+import javax.lang.model.type.TypeMirror
 
 fun <T> Optional<T>.orNull(): T? = orElse(null)
 
@@ -134,8 +135,8 @@ fun VirtualFile.toFileIfExists(): File? {
 
 fun DependencyRequest.sourceMethod(): String? {
     val element = requestElement().orNull()
-    return if (element is Symbol.MethodSymbol) {
-        "${element.simpleName}(${element.params.joinToString(",") { it.type.tsym.simpleName }})"
+    return if (element is ExecutableElement) {
+        "${element.simpleName}(${element.parameters.joinToString(",") { it.asType().presentableName() }})"
     } else {
         element?.toString()
     }
@@ -166,11 +167,10 @@ fun DeclaredType.presentableName(): String {
     var name = this.asElement().simpleName.toString()
     val params = typeArguments
     if (params.isNotEmpty()) {
-        name += "<${
-            params.joinToString(",") {
-                (it as? DeclaredType)?.asElement()?.simpleName ?: "Object"
-            }
-        }>"
+        name += "<${params.joinToString(",") { it.presentableName() }}>"
     }
     return name
 }
+
+private fun TypeMirror.presentableName() =
+    (this as? DeclaredType)?.asElement()?.simpleName ?: "Object"
