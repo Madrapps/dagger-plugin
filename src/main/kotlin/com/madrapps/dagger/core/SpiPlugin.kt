@@ -23,6 +23,10 @@ import dagger.spi.BindingGraphPlugin
 import dagger.spi.DiagnosticReporter
 import javax.inject.Qualifier
 import javax.lang.model.element.Element
+import javax.lang.model.element.ExecutableElement
+import javax.lang.model.element.TypeElement
+import javax.lang.model.element.VariableElement
+import javax.lang.model.type.DeclaredType
 import javax.swing.tree.DefaultMutableTreeNode
 
 private val keys = listOf<String>(
@@ -82,7 +86,7 @@ class SpiPlugin(private val project: Project) : BindingGraphPlugin {
         if (binding.kind().isMultibinding) {
             val classType = dr.key().type() as? Type.ClassType
             if (classType != null) {
-                val name = classType.presentableName()
+                val name = (classType as DeclaredType).presentableName()
                 val psiElement = dr.requestElement().orNull()?.toPsiElement(project)!!
                 currentNode = createNode(
                     name,
@@ -129,15 +133,15 @@ class SpiPlugin(private val project: Project) : BindingGraphPlugin {
         val psiElement: PsiElement
         when (element) {
             is Symbol.ClassSymbol -> {
-                psiElement = element.toPsiClass(project)!!
+                psiElement = (element as TypeElement).toPsiClass(project)!!
                 name = requestElement().orNull()?.name() ?: psiElement.name ?: element.simpleName.toString()
             }
             is Symbol.VarSymbol -> {
-                psiElement = element.toPsiParameter(project)!!
+                psiElement = (element as VariableElement).toPsiParameter(project)!!
                 name = requestElement().orNull()?.name() ?: psiElement.type.presentableText
             }
             is Symbol.MethodSymbol -> {
-                psiElement = element.toPsiMethod(project)!!
+                psiElement = (element as ExecutableElement).toPsiMethod(project)!!
                 var temp = requestElement().orNull()?.name() ?: if (psiElement.isConstructor) {
                     psiElement.name
                 } else {

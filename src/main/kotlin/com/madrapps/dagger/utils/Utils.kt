@@ -7,8 +7,6 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.*
 import com.intellij.psi.impl.light.LightMethodBuilder
 import com.intellij.psi.util.ClassUtil
-import com.sun.tools.javac.code.Symbol
-import com.sun.tools.javac.code.Type
 import dagger.model.BindingGraph.ComponentNode
 import dagger.model.DependencyRequest
 import org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments
@@ -74,18 +72,6 @@ fun Element.toPsiElement(project: Project): PsiElement? {
         is TypeElement -> toPsiClass(project)
         else -> null
     }
-}
-
-fun Symbol.MethodSymbol.toPsiMethod(project: Project): PsiMethod? {
-    return (this as ExecutableElement).toPsiMethod(project)
-}
-
-fun Symbol.ClassSymbol.toPsiClass(project: Project): PsiClass? {
-    return (this as TypeElement).toPsiClass(project)
-}
-
-fun Symbol.VarSymbol.toPsiParameter(project: Project): PsiParameter? {
-    return (this as VariableElement).toPsiParameter(project)
 }
 
 fun VariableElement.toPsiParameter(project: Project): PsiParameter? {
@@ -161,19 +147,6 @@ fun Element.name(): String? {
         is VariableElement -> (asType() as? DeclaredType)?.presentableName()
         else -> null
     }
-}
-
-fun Type.ClassType.presentableName(): String {
-    var name = this.asElement().simpleName.toString()
-    val params = typeArguments
-    if (params.isNotEmpty()) {
-        name += "<${
-            params.joinToString(",") {
-                it.asElement().simpleName
-            }
-        }>"
-    }
-    return name
 }
 
 fun DeclaredType.presentableName(): String {
