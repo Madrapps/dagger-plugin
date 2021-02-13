@@ -16,6 +16,9 @@ import org.jetbrains.kotlin.idea.facet.KotlinFacet
 import java.io.File
 import java.util.*
 import javax.lang.model.element.Element
+import javax.lang.model.element.ExecutableElement
+import javax.lang.model.element.VariableElement
+import javax.lang.model.type.DeclaredType
 
 fun <T> Optional<T>.orNull(): T? = orElse(null)
 
@@ -140,17 +143,34 @@ fun DependencyRequest.sourceMethod(): String? {
 
 fun Element.name(): String? {
     return when (this) {
-        is Symbol.MethodSymbol -> (returnType as? Type.ClassType)?.presentableName()
-        is Symbol.VarSymbol -> (type as? Type.ClassType)?.presentableName()
+        is ExecutableElement -> (returnType as? DeclaredType)?.presentableName()
+        is VariableElement -> (asType() as? DeclaredType)?.presentableName()
         else -> null
     }
 }
 
 fun Type.ClassType.presentableName(): String {
-    var name = tsym.simpleName.toString()
-    val params = typarams_field
+    var name = this.asElement().simpleName.toString()
+    val params = typeArguments
     if (params.isNotEmpty()) {
-        name += "<${params.joinToString(",") { it.tsym.simpleName }}>"
+        name += "<${
+            params.joinToString(",") {
+                it.asElement().simpleName
+            }
+        }>"
+    }
+    return name
+}
+
+fun DeclaredType.presentableName(): String {
+    var name = this.asElement().simpleName.toString()
+    val params = typeArguments
+    if (params.isNotEmpty()) {
+        name += "<${
+            params.joinToString(",") {
+                (it as? DeclaredType)?.asElement()?.simpleName ?: "Object"
+            }
+        }>"
     }
     return name
 }
