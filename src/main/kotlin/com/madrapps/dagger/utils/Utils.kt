@@ -67,6 +67,23 @@ fun VirtualFile.toFileIfExists(): File? {
     return if (file.exists()) file else null
 }
 
+fun Element.toPsiElement(project: Project): PsiElement? {
+    return when (this) {
+        is VariableElement -> toPsiParameter(project)
+        is ExecutableElement -> toPsiMethod(project)
+        is TypeElement -> toPsiClass(project)
+        else -> null
+    }
+}
+
+fun Symbol.MethodSymbol.toPsiMethod(project: Project): PsiMethod? {
+    return (this as ExecutableElement).toPsiMethod(project)
+}
+
+fun Symbol.ClassSymbol.toPsiClass(project: Project): PsiClass? {
+    return (this as TypeElement).toPsiClass(project)
+}
+
 fun Symbol.VarSymbol.toPsiParameter(project: Project): PsiParameter? {
     return (this as VariableElement).toPsiParameter(project)
 }
@@ -85,15 +102,6 @@ fun VariableElement.toPsiParameter(project: Project): PsiParameter? {
         }
     }
     return null
-}
-
-fun Element.toPsiElement(project: Project): PsiElement? {
-    return when (this) {
-        is Symbol.VarSymbol -> toPsiParameter(project)
-        is Symbol.MethodSymbol -> toPsiMethod(project)
-        is Symbol.ClassSymbol -> toPsiClass(project)
-        else -> null
-    }
 }
 
 fun ExecutableElement.toPsiMethod(project: Project): PsiMethod? {
@@ -118,16 +126,8 @@ fun ExecutableElement.toPsiMethod(project: Project): PsiMethod? {
     return null
 }
 
-fun Symbol.MethodSymbol.toPsiMethod(project: Project): PsiMethod? {
-    return (this as ExecutableElement).toPsiMethod(project)
-}
-
 fun TypeElement.toPsiClass(project: Project): PsiClass? {
     return ClassUtil.findPsiClass(PsiManager.getInstance(project), qualifiedName.toString())
-}
-
-fun Symbol.ClassSymbol.toPsiClass(project: Project): PsiClass? {
-    return (this as TypeElement).toPsiClass(project)
 }
 
 fun Element.getClass(): TypeElement {
