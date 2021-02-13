@@ -7,16 +7,19 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.*
 import com.intellij.psi.impl.light.LightMethodBuilder
 import com.intellij.psi.util.ClassUtil
+import dagger.MapKey
 import dagger.model.BindingGraph.ComponentNode
 import dagger.model.DependencyRequest
+import dagger.multibindings.ClassKey
+import dagger.multibindings.IntKey
+import dagger.multibindings.LongKey
+import dagger.multibindings.StringKey
 import org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments
 import org.jetbrains.kotlin.idea.facet.KotlinFacet
 import java.io.File
 import java.util.*
-import javax.lang.model.element.Element
-import javax.lang.model.element.ExecutableElement
-import javax.lang.model.element.TypeElement
-import javax.lang.model.element.VariableElement
+import javax.inject.Qualifier
+import javax.lang.model.element.*
 import javax.lang.model.type.DeclaredType
 import javax.lang.model.type.TypeMirror
 
@@ -160,3 +163,19 @@ fun DeclaredType.presentableName(): String {
 
 private fun TypeMirror.presentableName() =
     (this as? DeclaredType)?.asElement()?.simpleName ?: "Object"
+
+val AnnotationMirror.isMapKey: Boolean
+    get() = ((annotationType as DeclaredType).asElement() as TypeElement).qualifiedName.toString() == MapKey::class.java.name
+
+val AnnotationMirror.isQualifier: Boolean
+    get() = ((annotationType as DeclaredType).asElement() as TypeElement).qualifiedName.toString() == Qualifier::class.java.name
+
+private val keys = listOf<String>(
+    StringKey::class.java.name,
+    IntKey::class.java.name,
+    LongKey::class.java.name,
+    ClassKey::class.java.name
+)
+
+val AnnotationMirror.isStandardKey: Boolean
+    get() = keys.contains(((this.annotationType as DeclaredType).asElement() as TypeElement).qualifiedName.toString())

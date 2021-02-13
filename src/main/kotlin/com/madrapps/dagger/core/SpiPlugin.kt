@@ -6,29 +6,18 @@ import com.intellij.psi.PsiElement
 import com.madrapps.dagger.services.log
 import com.madrapps.dagger.services.service
 import com.madrapps.dagger.utils.*
-import com.madrapps.dagger.utils.name
-import dagger.MapKey
 import dagger.model.Binding
 import dagger.model.BindingGraph
 import dagger.model.BindingKind
 import dagger.model.DependencyRequest
-import dagger.multibindings.ClassKey
-import dagger.multibindings.IntKey
-import dagger.multibindings.LongKey
-import dagger.multibindings.StringKey
 import dagger.spi.BindingGraphPlugin
 import dagger.spi.DiagnosticReporter
-import javax.inject.Qualifier
-import javax.lang.model.element.*
+import javax.lang.model.element.Element
+import javax.lang.model.element.ExecutableElement
+import javax.lang.model.element.TypeElement
+import javax.lang.model.element.VariableElement
 import javax.lang.model.type.DeclaredType
 import javax.swing.tree.DefaultMutableTreeNode
-
-private val keys = listOf<String>(
-    StringKey::class.java.name,
-    IntKey::class.java.name,
-    LongKey::class.java.name,
-    ClassKey::class.java.name
-)
 
 class SpiPlugin(private val project: Project) : BindingGraphPlugin {
 
@@ -143,15 +132,7 @@ class SpiPlugin(private val project: Project) : BindingGraphPlugin {
                 }
                 if (parentBinding?.kind() == BindingKind.MULTIBOUND_MAP) {
                     val find = element.annotationMirrors.find {
-                        val did = it as AnnotationMirror
-                        val a =
-                            ((did.annotationType as DeclaredType).asElement() as TypeElement).qualifiedName.toString()
-                        val b =
-                            (did.annotationType as DeclaredType).asElement().annotationMirrors.find {
-                                val dod = it as AnnotationMirror
-                                ((dod.annotationType as DeclaredType).asElement() as TypeElement).qualifiedName.toString() == MapKey::class.java.name
-                            } != null
-                        keys.contains(a) || b
+                        it.isStandardKey || (it.annotationType as DeclaredType).asElement().annotationMirrors.find { it.isMapKey } != null
                     }
                     val snd = find?.elementValues?.values?.first()
                     val sndText = if (snd != null) {
@@ -165,11 +146,7 @@ class SpiPlugin(private val project: Project) : BindingGraphPlugin {
                     temp += " [$sndText]"
                 }
                 val snd = element.annotationMirrors.find {
-                    val did = it as AnnotationMirror
-                    (did.annotationType as DeclaredType).asElement().annotationMirrors.find {
-                        val dod = it as AnnotationMirror
-                        ((dod.annotationType as DeclaredType).asElement() as TypeElement).qualifiedName.toString() == Qualifier::class.java.name
-                    } != null
+                    (it.annotationType as DeclaredType).asElement().annotationMirrors.find { it.isQualifier } != null
                 }
                 if (snd != null) {
                     temp += "[${snd.annotationType.asElement().simpleName}]"
