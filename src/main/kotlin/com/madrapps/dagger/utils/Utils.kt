@@ -17,6 +17,7 @@ import java.io.File
 import java.util.*
 import javax.lang.model.element.Element
 import javax.lang.model.element.ExecutableElement
+import javax.lang.model.element.TypeElement
 import javax.lang.model.element.VariableElement
 import javax.lang.model.type.DeclaredType
 import javax.lang.model.type.TypeMirror
@@ -35,6 +36,35 @@ val ComponentNode.qualifiedName: String
 
 fun ComponentNode.toPsiClass(project: Project): PsiClass? {
     return ClassUtil.findPsiClass(PsiManager.getInstance(project), qualifiedName)
+}
+
+/**
+ * In some cases (since we work with .class files), we don't get the argument's name and instead get `arg0` or `arg1`.
+ * In this case, this method will return the position of the argument in the method.
+ */
+private fun getArgOrder(param: String): Int? {
+    return param.split("arg").getOrNull(1)?.toIntOrNull()
+}
+
+fun Module.getKotlinOutputDir(): File? {
+    KotlinFacet.get(this)?.let {
+        val path = (it.configuration.settings.compilerArguments as? K2JVMCompilerArguments)?.destination
+        val file = if (path != null) File(path) else null
+        if (file?.exists() == true) return file
+    }
+    return null
+}
+
+fun Module.getCompilerOutputFile(): File? {
+    CompilerModuleExtension.getInstance(this)?.let {
+        return it.compilerOutputPath?.toFileIfExists()
+    }
+    return null
+}
+
+fun VirtualFile.toFileIfExists(): File? {
+    val file = File(this.path)
+    return if (file.exists()) file else null
 }
 
 fun Element.getClass(): Symbol.ClassSymbol {
@@ -69,16 +99,23 @@ fun Symbol.VarSymbol.toPsiParameter(project: Project): PsiParameter? {
     return null
 }
 
-/**
- * In some cases (since we work with .class files), we don't get the argument's name and instead get `arg0` or `arg1`.
- * In this case, this method will return the position of the argument in the method.
- */
-private fun getArgOrder(param: String): Int? {
-    return param.split("arg").getOrNull(1)?.toIntOrNull()
+fun VariableElement.getMethod(): ExecutableElement {
+    var parent = enclosingElement
+    while (parent !is ExecutableElement) {
+        parent = parent.enclosingElement
+    }
+    return parent
 }
 
-fun Symbol.ClassSymbol.toPsiClass(project: Project): PsiClass? {
-    return ClassUtil.findPsiClass(PsiManager.getInstance(project), className())
+fun VariableElement.toPsiParameter(project: Project): PsiParameter? {
+    val method = getMethod()
+
+    return null
+}
+
+fun ExecutableElement.toPsiMethod(project: Project): PsiClass? {
+
+    return null
 }
 
 fun Symbol.MethodSymbol.toPsiMethod(project: Project): PsiMethod? {
@@ -112,25 +149,12 @@ fun Element.toPsiElement(project: Project): PsiElement? {
     }
 }
 
-fun Module.getKotlinOutputDir(): File? {
-    KotlinFacet.get(this)?.let {
-        val path = (it.configuration.settings.compilerArguments as? K2JVMCompilerArguments)?.destination
-        val file = if (path != null) File(path) else null
-        if (file?.exists() == true) return file
-    }
-    return null
+fun TypeElement.toPsiClass(project: Project): PsiClass? {
+    return ClassUtil.findPsiClass(PsiManager.getInstance(project), qualifiedName.toString())
 }
 
-fun Module.getCompilerOutputFile(): File? {
-    CompilerModuleExtension.getInstance(this)?.let {
-        return it.compilerOutputPath?.toFileIfExists()
-    }
-    return null
-}
-
-fun VirtualFile.toFileIfExists(): File? {
-    val file = File(this.path)
-    return if (file.exists()) file else null
+fun Symbol.ClassSymbol.toPsiClass(project: Project): PsiClass? {
+    return (this as TypeElement).toPsiClass(project)
 }
 
 fun DependencyRequest.sourceMethod(): String? {
