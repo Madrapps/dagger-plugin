@@ -17,7 +17,6 @@ import com.intellij.util.PathUtil
 import com.madrapps.dagger.utils.getCompilerOutputFile
 import com.madrapps.dagger.utils.getKotlinOutputDir
 import com.madrapps.dagger.services.log
-import com.sun.tools.javac.api.JavacTool
 import dagger.android.processor.AndroidProcessor
 import dagger.internal.DaggerCollections
 import dagger.internal.codegen.ComponentProcessor
@@ -28,10 +27,7 @@ import org.jetbrains.uast.UFile
 import org.jetbrains.uast.toUElement
 import java.io.File
 import java.util.*
-import javax.tools.DiagnosticCollector
-import javax.tools.JavaFileObject
-import javax.tools.StandardJavaFileManager
-import javax.tools.StandardLocation
+import javax.tools.*
 import kotlin.system.measureTimeMillis
 
 class Processor {
@@ -99,7 +95,7 @@ class Processor {
         outputDirectory: File,
         project: Project
     ) {
-        val compiler = JavacTool.create()
+        val compiler = ToolProvider.getSystemJavaCompiler()
         val diagnostics = DiagnosticCollector<JavaFileObject>()
         val fileManager: StandardJavaFileManager = compiler.getStandardFileManager(diagnostics, null, null)
         fileManager.setLocation(StandardLocation.CLASS_OUTPUT, listOf(outputDirectory))
