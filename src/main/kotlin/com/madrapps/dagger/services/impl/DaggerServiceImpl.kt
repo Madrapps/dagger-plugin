@@ -1,8 +1,8 @@
 package com.madrapps.dagger.services.impl
 
-import com.intellij.notification.Notification
+import com.intellij.notification.NotificationDisplayType
+import com.intellij.notification.NotificationGroup
 import com.intellij.notification.NotificationType
-import com.intellij.notification.Notifications
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.State
@@ -19,6 +19,9 @@ import javax.swing.tree.DefaultTreeModel
 
 @State(name = "com.madrapps.dagger", storages = [Storage(StoragePathMacros.WORKSPACE_FILE)])
 class DaggerServiceImpl(private val project: Project) : DaggerService, PersistentStateComponent<DaggerService.Storage> {
+
+    private val notificationGroup =
+        NotificationGroup("Dagger Group", NotificationDisplayType.NONE, false)
 
     private var panel: DaggerWindowPanel? = null
     private val elements = mutableSetOf<UElement>()
@@ -72,16 +75,10 @@ class DaggerServiceImpl(private val project: Project) : DaggerService, Persisten
     override val nodes: Set<Node>
         get() = _nodes
 
-    override fun log(title: String, content: String) {
+    override fun log(title: String, content: String, project: Project) {
         ApplicationManager.getApplication().invokeLater {
-            Notifications.Bus.notify(
-                Notification(
-                    "Dagger",
-                    title,
-                    content,
-                    NotificationType.INFORMATION
-                )
-            )
+            val msg = "$title : $content"
+            notificationGroup.createNotification(msg, NotificationType.INFORMATION).notify(project)
         }
     }
 

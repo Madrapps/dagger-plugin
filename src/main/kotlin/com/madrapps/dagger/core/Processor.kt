@@ -13,6 +13,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import com.intellij.tasks.TaskManager
+import com.intellij.util.ExceptionUtil
 import com.intellij.util.PathUtil
 import com.madrapps.dagger.utils.getCompilerOutputFile
 import com.madrapps.dagger.utils.getKotlinOutputDir
@@ -71,6 +72,8 @@ class Processor {
                                 } catch (e: Throwable) {
                                     running = false
                                     project.log("Exception Handled")
+                                    project.log(ExceptionUtil.getThrowableText(e))
+                                    project.log(ExceptionUtil.getThrowableText(ExceptionUtil.getRootCause(e)))
                                     e.printStackTrace()
                                 }
                             }

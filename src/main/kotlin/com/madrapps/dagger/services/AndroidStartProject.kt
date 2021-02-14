@@ -10,7 +10,7 @@ import com.intellij.openapi.startup.StartupActivity
 class AndroidStartProject : StartupActivity {
 
     override fun runActivity(project: Project) {
-        project.log("AndroidStartProject", "Android project opened")
+        project.log("AndroidStartProject", "Project opened")
         project.service
 
         AndroidProjectBuildNotifications.subscribe(project) { context ->

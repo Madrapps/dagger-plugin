@@ -30,7 +30,7 @@ interface DaggerService {
     fun addNode(node: Node)
     fun getNode(key: String): Node?
 
-    fun log(title: String, content: String)
+    fun log(title: String, content: String, project: Project)
 
     fun setPanel(panel: DaggerWindowPanel)
     fun getPanel(): DaggerWindowPanel?
@@ -51,9 +51,7 @@ val Project.service: DaggerService
 
 fun Project.log(title: String, content: String) {
     println("$title : $content")
-    if (false) {
-        service.log(title, content)
-    }
+    service.log(title, content, this)
 }
 
 fun Project.log(content: String) {
