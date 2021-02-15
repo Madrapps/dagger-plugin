@@ -7,6 +7,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.*
 import com.intellij.psi.impl.light.LightMethodBuilder
 import com.intellij.psi.util.ClassUtil
+import com.madrapps.dagger.services.log
 import dagger.MapKey
 import dagger.model.BindingGraph.ComponentNode
 import dagger.model.DependencyRequest
@@ -102,7 +103,13 @@ fun ExecutableElement.toPsiMethod(project: Project): PsiMethod? {
             isConstructor = true
             psiClass.name
         } else {
-            simpleName.toString()
+            val name = simpleName.toString()
+            if (name.contains("$")) {
+                val firstName = name.substringBefore("$")
+                psiClass.methods.find { it.name.startsWith("$firstName$") }?.name ?: firstName
+            } else {
+                name
+            }
         }
         val patternMethod = LightMethodBuilder(psiManager, methodName)
             .setMethodReturnType(returnType.toString())
@@ -110,7 +117,14 @@ fun ExecutableElement.toPsiMethod(project: Project): PsiMethod? {
         parameters.forEach {
             patternMethod.addParameter(it.simpleName.toString(), it.asType().toString())
         }
-        return psiClass.findMethodBySignature(patternMethod, false)
+        val psiMethod = psiClass.findMethodBySignature(patternMethod, false)
+        if (psiMethod == null) {
+            project.log("Method not found: $patternMethod")
+            psiClass.methods.forEach {
+                project.log("-- All Methods: ${it.name}")
+            }
+        }
+        return psiMethod
     }
     return null
 }

@@ -7,7 +7,7 @@ plugins {
 }
 
 group 'com.madrapps'
-version '0.3.2020.2.1'
+version '0.3.2020.2.2'
 
 jacoco {
     toolVersion '0.8.6'
@@ -59,7 +59,7 @@ compileTestKotlin {
 
 patchPluginXml {
     changeNotes """
-    - Show basic dagger validation errors in the editor for @Inject, @Binds and @Provides <br/>
+    - Fix issue with Dagger 2.29 which generates methods with variant names in Android projects<br/>
 """
 }
 
