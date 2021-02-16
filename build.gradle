@@ -7,7 +7,7 @@ plugins {
 }
 
 group 'com.madrapps'
-version '0.3.2020.2.2'
+version '0.3.2020.3.3'
 
 jacoco {
     toolVersion '0.8.6'
@@ -28,10 +28,10 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation group: 'org.jetbrains.uast', name: 'uast', version: '1.0.12'
 
-    implementation 'com.google.dagger:dagger:2.27'
-    implementation 'com.google.dagger:dagger-compiler:2.27'
-    implementation 'com.google.dagger:dagger-android-processor:2.27'
-    implementation group: 'com.google.dagger', name: 'dagger-spi', version: '2.27'
+    implementation 'com.google.dagger:dagger:2.31.2'
+    implementation 'com.google.dagger:dagger-compiler:2.31.2'
+    implementation 'com.google.dagger:dagger-android-processor:2.31.2'
+    implementation group: 'com.google.dagger', name: 'dagger-spi', version: '2.31.2'
 
     testImplementation group: 'junit', name: 'junit', version: '4.12'
     testCompile fileTree(include: ['*.jar'], dir: 'libs')
@@ -39,7 +39,7 @@ dependencies {
 }
 
 intellij {
-    version '2020.2'
+    version '2020.3'
     plugins 'Kotlin', 'java', 'android'
 }
 
