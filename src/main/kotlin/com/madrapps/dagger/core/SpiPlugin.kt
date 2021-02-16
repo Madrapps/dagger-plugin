@@ -127,34 +127,38 @@ class SpiPlugin(private val project: Project) : BindingGraphPlugin {
                 name = requestElement().orNull()?.name() ?: (psiElement as PsiParameter).type.presentableText
             }
             is ExecutableElement -> {
-                psiElement = element.toPsiMethod(project)!!
-                var temp = requestElement().orNull()?.name() ?: if ((psiElement as PsiMethod).isConstructor) {
-                    psiElement.name
-                } else {
-                    psiElement.returnType?.presentableText ?: "NULL"
-                }
-                if (parentBinding?.kind() == BindingKind.MULTIBOUND_MAP) {
-                    val find = element.annotationMirrors.find {
-                        it.isStandardKey || (it.annotationType as DeclaredType).asElement().annotationMirrors.find { it.isMapKey } != null
+                psiElement = element.toPsiMethod(project) ?: element.getClass().toPsiClass(project)!!
+                if (psiElement is PsiMethod) {
+                    var temp = requestElement().orNull()?.name() ?: if ((psiElement as PsiMethod).isConstructor) {
+                        psiElement.name
+                    } else {
+                        psiElement.returnType?.presentableText ?: "NULL"
                     }
-                    val snd = find?.elementValues?.values?.first()
-                    val sndText = if (snd != null) {
-                        val value = snd.value
-                        when (value) {
-                            is VariableElement -> "${(value.asType() as DeclaredType).asElement().simpleName}.${value.simpleName}"
-                            is DeclaredType -> value.asElement().simpleName.toString()
-                            else -> value.toString()
+                    if (parentBinding?.kind() == BindingKind.MULTIBOUND_MAP) {
+                        val find = element.annotationMirrors.find {
+                            it.isStandardKey || (it.annotationType as DeclaredType).asElement().annotationMirrors.find { it.isMapKey } != null
                         }
-                    } else "Object"
-                    temp += " [$sndText]"
+                        val snd = find?.elementValues?.values?.first()
+                        val sndText = if (snd != null) {
+                            val value = snd.value
+                            when (value) {
+                                is VariableElement -> "${(value.asType() as DeclaredType).asElement().simpleName}.${value.simpleName}"
+                                is DeclaredType -> value.asElement().simpleName.toString()
+                                else -> value.toString()
+                            }
+                        } else "Object"
+                        temp += " [$sndText]"
+                    }
+                    val snd = element.annotationMirrors.find {
+                        (it.annotationType as DeclaredType).asElement().annotationMirrors.find { it.isQualifier } != null
+                    }
+                    if (snd != null) {
+                        temp += "[${snd.annotationType.asElement().simpleName}]"
+                    }
+                    name = temp
+                } else {
+                    name = "[UNKNOWN]"
                 }
-                val snd = element.annotationMirrors.find {
-                    (it.annotationType as DeclaredType).asElement().annotationMirrors.find { it.isQualifier } != null
-                }
-                if (snd != null) {
-                    temp += "[${snd.annotationType.asElement().simpleName}]"
-                }
-                name = temp
             }
             else -> return null
         }
