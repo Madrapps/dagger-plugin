@@ -1,9 +1,11 @@
 package com.madrapps.dagger.validation
 
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiMethod
+import com.intellij.psi.PsiModifierListOwner
+import com.intellij.psi.PsiParameter
 import com.intellij.psi.impl.source.PsiClassReferenceType
 import com.madrapps.dagger.utils.*
-import org.jetbrains.kotlin.asJava.classes.isPrivateOrParameterInPrivateMethod
 import org.jetbrains.uast.UMethod
 import org.jetbrains.uast.getContainingUClass
 
@@ -82,4 +84,11 @@ fun UMethod.validateModuleClass(range: PsiElement, error: String): List<Problem.
     return if (!uClass.isModule) {
         range.errors(error)
     } else emptyList()
+}
+
+fun PsiModifierListOwner.isPrivateOrParameterInPrivateMethod(): Boolean {
+    if (hasModifierProperty("private")) return true
+    if (this !is PsiParameter) return false
+    val parentMethod = declarationScope as? PsiMethod ?: return false
+    return parentMethod.hasModifierProperty("private")
 }
