@@ -7,7 +7,7 @@ plugins {
 }
 
 group 'com.madrapps'
-version '0.3.2020.3.3'
+version '0.3.2021.1.1'
 
 jacoco {
     toolVersion '0.8.6'
@@ -39,7 +39,7 @@ dependencies {
 }
 
 intellij {
-    version '2020.3'
+    version '2021.1'
     plugins 'Kotlin', 'java', 'android'
 }
 
@@ -59,7 +59,7 @@ compileTestKotlin {
 
 patchPluginXml {
     changeNotes """
-    - Fix issue with Dagger 2.29 which generates methods with variant names in Android projects<br/>
+    - Fix issue with Dagger 2.31 which generates methods with variant names in Android projects<br/>
 """
 }
 
