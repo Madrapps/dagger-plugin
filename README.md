@@ -21,7 +21,7 @@ Usage
 -----
 - Build your project, and the graph will be displayed in the <b>Dagger</b> tool window
 - Tap on <b>Refresh</b> in the Dagger tool window to refresh the graph
-- The plugin itself uses Dagger 2.27 and hence validations and graph will be calculated based on this version. For optimal usage, consider updating Dagger to the latest version
+- The plugin itself uses Dagger 2.31 and hence validations and graph will be calculated based on this version. For optimal usage, consider updating Dagger to the latest version
 
 Testing
 -----
