@@ -1,13 +1,13 @@
 plugins {
     id 'java'
     id 'jacoco'
-    id 'org.jetbrains.intellij' version '0.6.5'
-    id 'org.jetbrains.kotlin.jvm' version '1.4.30'
-    id "org.jetbrains.kotlin.kapt" version "1.4.30"
+    id 'org.jetbrains.intellij' version '0.7.3'
+    id 'org.jetbrains.kotlin.jvm' version '1.5.21'
+    id 'org.jetbrains.kotlin.kapt' version '1.5.21'
 }
 
 group 'com.madrapps'
-version '0.3.2020.3.3'
+version '0.3.2021.2.1'
 
 jacoco {
     toolVersion '0.8.6'
@@ -21,12 +21,10 @@ tasks.withType(Test) {
 repositories {
     mavenCentral()
     maven { url "https://maven.google.com/" }
-    maven { url "https://dl.bintray.com/kotlin/uast/" }
 }
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    implementation group: 'org.jetbrains.uast', name: 'uast', version: '1.0.12'
 
     implementation 'com.google.dagger:dagger:2.31.2'
     implementation 'com.google.dagger:dagger-compiler:2.31.2'
@@ -34,13 +32,13 @@ dependencies {
     implementation group: 'com.google.dagger', name: 'dagger-spi', version: '2.31.2'
 
     testImplementation group: 'junit', name: 'junit', version: '4.12'
-    testCompile fileTree(include: ['*.jar'], dir: 'libs')
+    testImplementation fileTree(include: ['*.jar'], dir: 'libs')
     kaptTest fileTree(include: ['*.jar'], dir: 'libs')
 }
 
 intellij {
-    version '2020.3'
-    plugins 'Kotlin', 'java', 'android'
+    version '2021.2'
+    plugins = ['Kotlin', 'java', 'android']
 }
 
 compileKotlin {
@@ -55,12 +53,6 @@ compileTestKotlin {
         jvmTarget = "1.8"
         freeCompilerArgs += ["-Xopt-in=kotlin.RequiresOptIn"]
     }
-}
-
-patchPluginXml {
-    changeNotes """
-    - Fix issue with Dagger 2.29 which generates methods with variant names in Android projects<br/>
-"""
 }
 
 test {
