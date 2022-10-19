@@ -7,7 +7,7 @@ plugins {
 }
 
 group 'com.madrapps'
-version '0.3.2022.1.0'
+version '0.3.2022.2.0'
 
 
 jacoco {
@@ -25,7 +25,7 @@ repositories {
 }
 
 intellij {
-    version = '2022.1'
+    version = '2022.2'
     plugins = ['Kotlin', 'java', 'android']
 }
 
