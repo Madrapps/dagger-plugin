@@ -2,6 +2,7 @@ package com.madrapps.dagger.utils
 
 import com.intellij.psi.*
 import com.intellij.psi.util.PsiUtil
+import org.jetbrains.kotlin.asJava.classes.KtLightClass
 import org.jetbrains.kotlin.psi.KtConstructorCalleeExpression
 import org.jetbrains.kotlin.psi.KtObjectDeclaration
 import org.jetbrains.kotlin.psi.psiUtil.getChildOfType
@@ -103,7 +104,7 @@ val PsiClass.isQualifier: Boolean
     get() = hasAnnotation(QUALIFIER)
 
 val UClass.isKotlinObject: Boolean
-    get() = (this as? KotlinUClass)?.ktClass is KtObjectDeclaration
+    get() = (this as? KtLightClass)?.kotlinOrigin is KtObjectDeclaration
 
 fun UMethod.checkExceptionsThrown(): List<String> {
     val classes = javaPsi.throwsList.referenceElements.mapNotNull {
